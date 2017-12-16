@@ -1,6 +1,5 @@
 # 查询所有issue及其里程碑和标签和其他相关信息
 SELECT
-    i.
 	r.lower_name AS '仓库名',
     i.`index` AS 'index',
 	i.`name` AS 'issue名称',
