@@ -5507,18 +5507,25 @@ exports.relative = function(from, to) {
 
   var outputParts = [];
   for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');= _.cloneDeep(objects);
-     * console.log(deep[0] === objects[0]);
-     * // => false
-     */
-    function cloneDeep(value) {
-      return baseClone(value, CLONE_DEEP_FLAG | CLONE_SYMBOLS_FLAG);
-    }
+    outputParts.push('..');
+  }
 
-    /**
-     * This method is like `_.cloneWith` except that it recursively clones `value`.
-     *soever
-    return '.';
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
   }
 
   if (dir) {
@@ -66372,5 +66379,4 @@ exports.push([module.i, "/* Flowchart variables */\n/* Sequence Diagram variable
 
 /***/ })
 /******/ ])["default"];
-});"default"];
 });
