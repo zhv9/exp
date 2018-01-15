@@ -12,7 +12,9 @@
 
 [代码规范](http://dev/csharp/CSharpCodingGuidelines.htm)
 
-[代码规范速查表](http://dev/csharp/CSharpCodingGuidelinesCheatsheet.pdf)
+[代码规范速查表(中文)](http://dev/csharp/CSharpCodingGuidelinesCheatsheet_cn.htm)
+
+[代码规范速查表(英文)](http://dev/csharp/CSharpCodingGuidelinesCheatsheet_en.htm)
 
 > 安装resharper，并导入配置文件。resharper提示的问题都要修改，提示的warning要解决。
 
