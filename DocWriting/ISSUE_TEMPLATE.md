@@ -14,4 +14,4 @@
 - 标签中选择问题的级别、类型等
 
 ### markdown格式编写方法
-[markdown-guide](./markdown-guide/markdown-guide.md)
+[markdown-guide](http://dev:802/sqa/works/src/branch/master/DocWriting/markdown-guide/markdown-guide.md)
