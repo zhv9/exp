@@ -6,6 +6,7 @@
   - 参照[软件研发部工作指南](./manage/engineering.md)对开发的工作进行规范，涉及工作流程，工作方法，代码规范，工作完成定义和项目状况确认这几个方面。
 - 提交commit
   - 在提交每个commit的时候，根据[Commit信息编写指南](./Git/Commit信息编写指南.md)填写commit信息**Angular规范**，以便在发布版本的时候，利用commit信息自动生成ChangeLog。
+- 代码审查，可以参考[代码审查指南](https://www.codeproject.com/Articles/524235/Codeplusreviewplusguidelines)中的方法进行审查。
 - 版本发布
   - [版本发布指南](./Git/release.md)
 
