@@ -1,5 +1,3 @@
-# works
-
 ## 工作方法指南
 
 - 工作流程和方法
@@ -10,7 +8,7 @@
 - 版本发布
   - [版本发布指南](./Git/release.md)
 
-## 最佳实践
+## 开发相关
 
 ### EntityFramework
 > [EntityFramework基础教程](./EntityFramework)
@@ -26,6 +24,10 @@
 ### CodeReview
 > [CodeReview](./CodeReview/CodeReview.md)
 
+### 设计模式
+> [设计模式](./DesignPattern/设计模式.md)
+
+## 工具使用
 
 ### Git
 
