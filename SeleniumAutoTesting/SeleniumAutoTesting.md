@@ -200,3 +200,104 @@ driver = webdriver.PhantomJS(service_args=["--ignore-ssl-errors=true"])
 
 - 如果需要对Web页面元素的显示或样式等做大量校验，那么就不要使用PhantomJS
 - 如果使用Headliss浏览器做GUI测试，那么在页面操作的关键之处保存截图
+
+## 常规API
+
+### 浏览器操作
+
+```python
+driver.maximize_window() # 窗口最大化
+driver.title # 获得窗口标题
+driver.add_cookie({'name':'lang', 'value':'python'}) # 创建cookie
+driver.get_cookie() # 获取cookie
+driver.get_cookie(your_cookie) # 获取特定cookie
+driver.delete_all_cookies() # 删除所有cookie
+driver.delete_cookie(your_cookie) # 删除特定cookie
+driver.save_screenshot(your_file_name) # 屏幕截图
+```
+
+### ActionChains
+
+将一系列操作插入插入一个列队中，在最后使用perform()来执行列队中的所有命令。
+
+一般在测试悬浮菜单，鼠标拖放等场景时，会经常用到。
+
+```python
+menu = driver.find_element_by_css_selector(".nav")
+hidden_submenu = driver.find_element_by_css_selector(".nav#submenu1")
+
+# 组合到一条来执行ActionChains
+ActionChains(driver).move_to_element(menu).click(hidden_submenu).perform()
+
+# 或者分解到多条来执行ActionChains
+actions = ActionChains(driver)
+actions.move_to_element(menu)
+actions.click(hidden_submenu)
+actions.perform()
+```
+
+### Alert
+
+```python
+Alert(driver).accept()
+Alert(driver).dismiss()
+name_prompt = Alert(driver)name_prompt.send_keys("aaa")name_prompt.accept()
+```
+
+### Desired Capabilities
+
+用来连接Selenium Server或者Selenium Grid时来实例化WebDriver
+
+```python
+driver = webdriver.Remote(
+    command_excutor="http://127.0.0.1:4444/wd/hub",
+    desired_capabilities=DesiredCapabilities.CHROME)
+)
+```
+
+Desired Capabilities也可以自定义或在已有的基础上更新(字典)对象部分值
+
+```python
+# 从头做
+desired_caps = dict()
+desired_caps["appPackage"] = "com.android.settings"
+desired_caps["platformName"] = "Android"
+
+# 基于已有定义
+
+capabilities = DesiredCapabilities.FIREFOX.copy()
+capabilities["platform"] = "WINDOWS"
+capabilities["version"] = "10"
+```
+
+### Keys
+
+引用Keys可以完成很多特殊键的输入，比如回车、Tab、F1~F12、方向键等。
+
+```python
+# 点击页面元素后，按Enter键
+actionChains(driver).click(to_station_element).send_keys(Keys.ENTER).perform()
+```
+
+### Wait
+
+有两种等待机制，显示等待和隐式等待
+
+```python
+# 显示等待需要设置等待条件和等待时间
+wait = WebDriverWait(driver, 5)
+element = wait.until(expected_)conditions.element_to_be_clickable((By.ID, "spnUid"))
+
+# 隐式等待只需要设置等待时间
+driver.implicitly_wait(5)
+```
+
+### execute_script
+
+可以运行JavaScript脚本，比如获得当前的User Agent`driver.execute_script("return navigator.userAgent")`。
+
+### switch_to
+
+用来在父页面、子页面、弹出框之前切换，如果存在多个窗口可供切换，那么Driver是可以获取到这些窗口句柄的，否则会抛出异常。
+
+`driver.switch_to.window(driver.window_handles[1])`
