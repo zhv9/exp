@@ -301,3 +301,80 @@ driver.implicitly_wait(5)
 用来在父页面、子页面、弹出框之前切换，如果存在多个窗口可供切换，那么Driver是可以获取到这些窗口句柄的，否则会抛出异常。
 
 `driver.switch_to.window(driver.window_handles[1])`
+
+### 可能会遇到的异常
+
+#### NoSuchElementException
+
+- 元素定位方式有误，可能是页面源码有改动，元素属性值发生了改变。
+- 元素还在不可用的状态下，在这种状态下，如果尝试获取该元素，就会报错。
+- 在执行过程中突然出现了弹窗，影响了对之前页面的操作。
+
+#### ElementNotVisibleException
+
+要确认这个元素是不是在隐藏域中
+
+#### StaleElementReferenceException
+
+元素的引用不是最新的：某些操作后，导致DOM重新构建了，而最初创建的引用就无法在测试脚本中继续使用了。
+
+可以用显式等待的方法，等元素过时之后，再重新find方法建立引用。
+
+## Page Object
+
+把页面作为类的对象来维护，将各个页面的元素操作与访问方式抽离出来，即分解成元素的**操作类**与元素的**访问类**。
+
+下面示例将测试分为测试用例，测试页面，页面元素三部分。
+
+```python
+# 对页面中的元素进行定位
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+class HomePage_Element(object):
+    txt_query = (By.NAME, "q")
+class SearchPage_Element(object):
+    btn_search = (By.XPATH, "/html/body/div[4]/div[1]/div[1]/div/form/div[2]/div[2]/button")
+    menu_select = ()
+    menu_item_most_stars = ()
+```
+
+```python
+from PageElements import HomePage_Element
+# 从PageElement中获取元素对象，并封装操作，如也可以考虑直接封装好操作类，然后在这里使用操作类完成一些具体的操作。
+class BasePage(object):
+    def __init__(self, driver):
+        self.driver = driver
+class HomePage(BasePage):
+    """Home page action methods come here. I.e. Python.org"""
+    def is_title_matches(self):
+        """Verifies that the hardcoded text "Python" appears in page title"""
+        return "GitHub" in self.driver.title
+    def enter_query_txt(self, value):
+        """Triggers the search"""
+        element = self.driver.find_element(HomePage_Element.HomePage_Element.txt_query)
+        element.send_keys(value)
+```
+
+```python
+import unittest
+from selenium import webdriver
+import page
+# 测试方法，调用page中的各个方法来执行各项操作
+class GitHubSearch(unittest.TestCase):
+    """A sample test class to show how page object works"""
+    def setUp(self):
+        self.driver = webdriver.Firefox()
+        self.driver.get("https://github.com/")
+    def test_search_in_python_org(self):
+        #Load the home page. In this case the home page of github.com.
+        home_page = page.HomePage(self.driver)
+        #Checks if the word "GitHub" is in title
+        assert home_page.is_title_matches(), "github.com title doesn't match."
+        #Sets the text of search textbox to "microsoft"
+        home_page.enter_query_txt('microsoft')
+        # search_results_page = page.SearchResultsPage(self.driver)
+        # #Verifies that the results page is not empty
+        # assert search_results_page.is_results_found(), "No results found."
+    def tearDown(self):
+        self.driver.close()
+```
