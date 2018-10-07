@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- 对模式进行一种组件式的包装 -->
+  <div id="root"></div>
+  <script>
+    var root = document.getElementById('root')
+
+    // 将所有的setState整合到Component中
+    class Component {
+      setState(newState) {
+        this.state = {
+          ...this.state,
+          ...newState
+        }
+      }
+    }
+    class Button extends Component {
+      constructor() {
+        super()
+        this.state = {
+          like: true
+        }
+      }
+      // setState(newState) {
+      //   this.state = {
+      //     ...this.state,
+      //     ...newState
+      //   }
+      // }
+      render() {
+        const state = this.state
+        return `
+          <button type="button" style="color: ${state.like ? "red" : "black"};">
+            ${state.like ? "已赞" : "喜欢"}
+         </button>
+        `
+      }
+    }
+
+    class Title extends Component {
+      constructor() {
+        super()
+        this.state = {
+          text: "this is a title"
+        }
+      }
+      // setState(newState) {
+      //   this.state = {
+      //     ...this.state,
+      //     newState
+      //   }
+      // }
+      render() {
+        return `<h1>${this.state.text}</h1>`
+      }
+    }
+
+    class Wrap {
+      constructor() {
+
+      }
+      render() {
+        return `
+          wrap
+          ${new Title().render()}
+          ${new Button().render()}
+        `
+      }
+    }
+
+    root.innerHTML = new Wrap().render()
+  </script>
+</body>
+
+</html>

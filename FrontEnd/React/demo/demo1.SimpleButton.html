@@ -1,0 +1,29 @@
+<!-- demo 1: 简单的点赞按钮 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <button type="button" id="like">喜欢</button>
+    <script>
+        var likeBtn = document.getElementById('like');
+
+        likeBtn.addEventListener('click', function () {
+            if (likeBtn.innerHTML === '已赞') {
+                likeBtn.innerHTML = '喜欢';
+                likeBtn.style.color = 'black';
+            } else {
+                likeBtn.innerHTML = '已赞';
+                likeBtn.style.color = 'red';
+            }
+        })
+    </script>
+</body>
+
+</html>

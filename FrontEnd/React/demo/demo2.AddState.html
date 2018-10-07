@@ -1,0 +1,50 @@
+<!-- 新引入一个state -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <button type="butten" id="like">喜欢</button>
+  <script>
+    var likeBtn = document.getElementById('like');
+
+    var state = {
+      like: false,
+      color: 'red'
+    }
+
+    var setState = function (newState) {
+      state = {
+        ...state,
+        ...newState
+      }
+      render()
+    }
+
+    var render = function () {
+      if (state.like) {
+        // like's status
+        likeBtn.innerHTML = '已赞';
+        likeBtn.style.color = 'red';
+      } else {
+        // unlike's status
+        like.innerHTML = '喜欢';
+        like.style.color = 'black';
+      }
+    }
+
+    likeBtn.addEventListener('click', function () {
+      setState({
+        like: !state.like
+      })
+    })
+  </script>
+</body>
+
+</html>

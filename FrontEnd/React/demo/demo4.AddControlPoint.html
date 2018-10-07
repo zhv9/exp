@@ -1,0 +1,75 @@
+<!-- 新增handle控制输入数据 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <input type="text" id="input">
+  <button id="clearError">X</button>
+  <p id="error" style="color:red;">字数不能超过10个字</p>
+  <script>
+    var input = document.getElementById('input')
+    var errorMsg = document.getElementById('error')
+
+    // 可以轻松的添加新的功能
+    var clearError = document.getElementById('clearError')
+    clearError.addEventListener('click', function () {
+      setState({
+        error: false
+      })
+    })
+
+    // 数据
+    var state = {
+      value: "",
+      error: false
+    }
+
+    // 修改数据的接口
+    var setState = function (newState) {
+      state = {
+        ...state,
+        ...newState
+      }
+      render()
+    }
+
+    // 负责根据数据（state）渲染网页
+    var render = function () {
+      input.value = state.value
+      if (state.error) {
+        errorMsg.style.display = 'block'
+      } else {
+        errorMsg.style.display = 'none'
+      }
+    }
+
+    // 负责控制数据
+    var handleInput = function (value) {
+      if (value.length < 10) {
+        setState({
+          value: value,
+          error: false
+        })
+      } else {
+        setState({
+          error: true
+        })
+      }
+    }
+
+    input.addEventListener('input', function () {
+      handleInput(this.value)
+    })
+
+    render()
+  </script>
+</body>
+
+</html>
