@@ -41,6 +41,7 @@ class App extends Component {
     })
   }
   render() {
+    console.log('App组件更新了')
     var name = "xiaoming";
     var arr = [1, 2, 3, 4, 5];
     return (
@@ -87,6 +88,13 @@ class App extends Component {
           {/* 使用外部受控的input */}
           <Input></Input>
         </div>
+        <div>
+          {/* 组件状态更新 父组件=>子组件 */}
+          <Input></Input>
+          <Button></Button>
+          <p onClick={() => this.setState({})}>点击更新App组件</p>
+        </div>
+
       </div>
     );
   }
