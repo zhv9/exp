@@ -6,6 +6,7 @@ import './App.css';
 import './Button';
 import Button from './Button';
 import Input from './Input';
+import PropsButton, { PropsNav } from './PropsButton';
 
 // 类方法生成组件
 class Nav extends Component {
@@ -94,7 +95,19 @@ class App extends Component {
           <Button></Button>
           <p onClick={() => this.setState({})}>点击更新App组件</p>
         </div>
-
+        <div>
+          <PropsNav title='标题'>
+            <hr />
+            函数 用参数传递props, 使用时直接用props.
+            <hr />
+            class 用this.props.
+            <hr />
+            <h2>这是传递的子组件1</h2>
+            <h3>这是传递的子组件2</h3>
+            <PropsButton name="复用的button1"></PropsButton>
+            <PropsButton name="复用的button2"></PropsButton>
+          </PropsNav>
+        </div>
       </div>
     );
   }
