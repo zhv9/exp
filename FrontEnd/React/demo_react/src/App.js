@@ -5,6 +5,7 @@ import './App.css';
 // 从外部引入组件
 import './Button';
 import Button from './Button';
+import Input from './Input';
 
 // 类方法生成组件
 class Nav extends Component {
@@ -81,6 +82,10 @@ class App extends Component {
 
           {/* 使用外部js生成的组件 */}
           <Button />
+        </div>
+        <div>
+          {/* 使用外部受控的input */}
+          <Input></Input>
         </div>
       </div>
     );

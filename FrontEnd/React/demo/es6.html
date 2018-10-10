@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    var p = a => alert('1');
+
+    var obj = {
+      name: "1",
+      f: function () {
+        // 如果不用 me = this 的话，setTimeout 中的 this 就会指向 window
+        var me = this
+        window.setTimeout(function () {
+          console.log(me.name, 'in timeout')
+        }, 100)
+      },
+      fn: function () {
+        // 这个函数在哪个函数中调用，this 就属于哪个对象
+        setTimeout(() => {
+          console.log(this, '箭头函数中的this')
+        }, 100)
+      }
+    }
+    
+    // 1. 在jsx中，事件监听的属性为驼峰式命名
+    // 2. 在jsx中，事件监听指向一个js函数
+    // html: onclick="handleClick()"
+    // jsx: onClick={()=>this.handleClick()}
+    
+  </script>
+</body>
+
+</html>
