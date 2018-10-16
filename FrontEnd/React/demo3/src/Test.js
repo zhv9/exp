@@ -38,16 +38,21 @@ export default class Test extends Component {
   }
 
   // 更新生命周期  
-  componentWillReceiveProps() {
+  componentWillReceiveProps(nextProps) {
     console.log(this.props.name + '组件将要接受参数 componentWillReceiveProps')
   }
 
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps, nextState) {
     console.log(this.props.name + '组件是否更新 shouldComponentUpdate')
-    return true
+    console.log(nextState)
+    if (nextState.time.getSeconds() % 2 === 0) {
+      return true
+    }
+    return false
+    // 如果return false 则组件就不会更新了
   }
 
-  componentWillUpdate() {
+  componentWillUpdate(nextProps, nextState) {
     console.log(this.props.name + '组件将要更新 componentWillUpdate')
   }
 
@@ -55,7 +60,7 @@ export default class Test extends Component {
   //   console.log('在更新前获取截图 getSnapshotBeforeUpdate')
   // }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState, info) {
     console.log(this.props.name + '组件已经更新完毕 componentDidUpdate')
   }
 
