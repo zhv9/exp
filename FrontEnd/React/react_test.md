@@ -236,3 +236,227 @@ test('fires onSave on blur if not new',()=>{
   // Same as onSave
 })
 ```
+
+## Snapshots test
+
+如果觉得花费大量时间为单个组件写测试代码不值得，还可以使用 Jest 的**快照测试**功能来做测试。
+
+快照测试就是特定时间传入某些 props 后组件的照片。Jest 每次运行测试时，都会创建新的照片，并与上一次的进行比较，以检查是否有新的变化。
+
+### Package
+
+快照内容由 react-test-renderer 包的 render 方法输出。
+
+```sh
+npm install --save-dev react-test-renderer
+```
+
+### Snapshots test code
+
+ ```js
+import TodoTextInput form './TodoTextInput'
+ 
+test('snapshots are awesome', ()=>{
+  const component = renderer.create(
+    <TodoTextInput onSave={ ()=>{} } />
+  )
+})
+// 上面返回组件的实例，使用组件的 toJSON 方法生成 json
+const tree = component.toJSON()  
+
+
+// 最后编写预测语句检查 tree 变化
+expect(tree).toMatchSnapshot()
+
+// 如果输出 tree 则结果是这样的(实际保存的 snapshot 则类似于 jsx)：
+{
+  type: 'input',
+    props:
+      {
+        className:'',
+        type: 'text',
+        placeholder: undefined,
+        autoFocus: 'true',
+        value: '',
+        onBlur: [Function],
+        onChange: [Function],
+        onKewDown: [Function]
+      },
+      children: null
+}
+
+ ```
+
+快照保存在 `_snapshots_` 文件夹下，其中每个文件都表示一个快照。
+
+如果给组件添加一个 `editing` 属性，并再次执行 `npm test` 控制台就会给出 `FAIL` 和变化点。
+
+执行 `npm test -- -u` 可以更新快照
+
+如果使用快照，可以在组件被错误修改的时候将其测试出来，这样开发人员就不用编写大量的测试来覆盖所有组件状态了。
+
+## Coverage Check
+
+可以使用 Jest 对测试覆盖率检查，有两种方法
+- Jest 命令后面加上 `-coverage`
+- 在 package 中为 Jest 创建配置，并将 collectCoverage 选项设置为 true
+
+## React Advanced Component Test
+
+被测代码，调用了 getJSON 函数
+
+```js
+// 这个返回 promise 对象，其中包含了请求路径返回的 JSON 数据
+import getJSON from './get-json'
+
+class extends React.Component{
+  constructor(props){
+    super(props)
+
+    this.state = { data: []}
+  }
+  componentDidMount(){
+    const endpoint = typeof url === 'function'
+      ? url (this.props)
+      : url
+    getJSON(endpoint).then(data => this.setState({ data }))
+  }
+
+  render(){
+    return <Component {...this.props} {...this.state} />
+  }
+}
+```
+
+需要测试三个方面：
+1. 检查增强后的组件接收到的 props 是否正确的传递给了组件
+1. 测试根据 URL 生成的请求路径逻辑，看看它是否适用于函数和字符串两种情况
+1. 如果 getJSON 函数返回数据，目标组件就能接收到它
+
+```js
+import { shallow, mount} from 'enzyme'
+import withData from './with-data'
+import getJSON from './get-json'
+
+// 使用 data 变量模拟数据，用来检查获取到的数据是否正确传递给了组件
+// 一个空的 List 组件，是要增强的目标组件，这样才能判断所有特性是否都能正常运行
+const data = 'data'
+const List = ()=> <div />
+
+// 我们不使用外部数据，避免外部不可用时导致测试失败
+// 测试框架会将 get-json 替换成作为第二个参数的函数。这个函数返回 jest.fn 创建的 mock 函数，这个 mock 函数会返回类似于 promise 的对象。
+jest.mock('./get-json', ()=>(
+  jest.fn( () => ({then: callback => callback(data)}) )
+))
+
+// 检查 props 是否正确传给了目标组件，下面将空 List 组件
+test('passes the props to the component', ()=>{
+  const ListWithGists = withData()(List)
+  const username = 'kv'
+  const wrapper = shallow(<ListWithGists username={username} />)
+  expect (wrapper.prop('username')).toBe(username)
+})
+
+// 检查是否用传入的 URL 调用了 getJSON 函数
+test('uses the function url', ()=>{
+  // 使用 mock 功能生成 URL 函数
+  const url = jest.fn(props => (
+    'https://api.github.com/users/${props.username}/gists'
+  ))
+
+  // 增强 List 组件并定义传给它的 props
+  const withGists = withData(url)
+  const ListWithGists = withGists(List)
+  const props = {username: 'kv'}
+
+  mount(<ListWithGists {...props} />)
+  
+  expect(url).toHaveBeenCalledWith(props)
+  expect(getJSON).toHaveBeenCalledWith(
+    'https://api.github.com/users/${props.username}/gists'
+  )
+})
+
+// 检查返回给 getJSON 模块的数据是否正确地传递给了目标组件
+test('passes the data to the component', ()=>{
+  const ListWithGists = withData()(List)
+  const wrapper = mount(<ListWithGists />)
+  expect(wrapper.prop('data')).toEqual(data)
+})
+```
+
+## Page Object Test
+
+多层嵌套组件的测试，下面是被测代码
+
+```js
+class Controlled extends React.component{
+  constructor(props){
+    super(props)
+    this.state = {
+      firstName: 'D',
+      lastName: 'A'
+    }
+  }
+  this.handleChange = this.handleChange.bind(this)
+  this.handleSubmit = this.handleSubmit.bind(this)
+
+  handleChange({ target }){
+    this.setState({
+      [target.name]: target.value,
+    })
+  }
+  
+  handleSubmit(e){
+    e.preventDefault()
+
+    this.props.onSubmit(
+      '${this.state.firstName} ${this.state.lastName}'
+    )
+  }
+
+  render(){
+    return (
+      <form onSubmit = {this.handleSubmit}>
+        <input
+          type="text"
+          name="firstName"
+          value={this.state.firstName}
+          onChange={this.handleChange}
+        />
+        <button>Submit</button>
+      </form>
+    )
+  }
+}
+```
+
+测试需要对输入框中输入内容并提交表单时用输入值触发 onSubmit 回调。
+
+```js
+// 先使用 jest.fn 模拟 onSubmit 函数
+test('submits the form', ()=>{
+  const onSubmit = jest.fn()
+  const wrapper = shallow(<Controlled onSubmit={onSubmit} />)
+
+  // 找到输入框触发它的 change 事件并传入新值
+  const firstName = wrapper.find('[name="firstName"]')
+  firstName.simulate(
+    'change',
+    {target: {name: 'firstName', value: 'first'}}
+  )
+  // 下面 lastName 和上面的firstName 有些重复，可以考虑重构一下
+  const lastName = wrapper.find('[name="lastName"]')
+  lastName.simulate(
+    'change',
+    {target: {name: 'lastName', value: 'last'}}
+  )
+
+  // 模拟表单提交
+  const form = wrapper.find('form')
+  form.simulate('submit', { preventDefault: ()=>{} })
+
+  // 预测 onSubmit 会被表单的输入值调用
+  expect(onSubmit).toHaveBeenCalledWith('first last')
+})
+```
