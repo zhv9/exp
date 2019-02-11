@@ -88,8 +88,9 @@ module.exports = {
 
 eslint 设置
 
+## Node as a Web Server
 
-## Import module
+### Import module
 
 通过使用 import 导入模块，如果需要导入非 default 的模块，则需要使用解构方法 {...}
 
@@ -118,7 +119,7 @@ export default {
   port: env.PORT || 8080
 };
 ```
-## Use https and http
+### Use https and http
 
 ```js
 import https from 'https';
@@ -145,7 +146,7 @@ server.on('request', (req, res)=> {
 
 server.listen(8080);
 ```
-## Use express
+### Use express
 
 使用 express 可以简化很多东西，比如下面代码中代替“fs”的部分。
 
@@ -359,3 +360,131 @@ class App extends React.Component {
 
 export default App;
 ```
+
+## Working with data
+
+### Loading Data
+
+```json
+{
+  "contests": [
+    {
+      "id": 1,
+      "categoryName": "Business/Company",
+      "contestName": "Cognitive Building Bricks"
+    },
+    {
+      "id": 2,
+      "categoryName": "Magazine/Newsletter",
+      "contestName": "Educating people about sustainable food production"
+    },
+    {
+      "id": 3,
+      "categoryName": "Software Component",
+      "contestName": "Big Data Analytics for Cash Circulation"
+    },
+    {
+      "id": 4,
+      "categoryName": "Website",
+      "contestName": "Free programming books"
+    }
+  ]
+}
+```
+
+> 对于上面的 json 文件，首先需要添加 json-loader 依赖，然后在 webpack 中添加 loader 设置，使 webpack 可以处理 json 文件。
+
+```js
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    path: __dirname + '/public',
+    filename: 'bundle.js'
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader'
+      }
+    ]
+  }
+};
+```
+
+> 通过 import 导入 json 文件，然后就可以直接使用了。
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+// 导入 json 数据
+import data from './testData';
+console.log(data);
+
+import App from './components/App';
+
+// 用 data.contests 使用数据
+ReactDOM.render(
+  <App contests={data.contests} />,
+  document.getElementById('root')
+);
+```
+
+### Displaying a list of objects
+
+### Using Sass with Node
+
+### Reading from the state
+
+### Fetching data from a remote API
+
+## Rendering on the Server
+
+### Fetching data from the server side
+
+### Server rendering with ReactDOMServer
+
+### Fix the checksum problem
+
+## Routing on Client and Server
+
+### Handling the contest click event
+
+### Navigating to a contest
+
+### Looking up the contest on route change
+
+### Fetching contest information from the API
+
+### A bit of refactoring
+
+### Server-side routing for a contest
+
+### Navigating to a list of contests
+
+### Handling the browser's back button
+
+## Working with MongoDB
+
+### Reading data from MongoDB
+
+### API to fetch a list of names
+
+### Displaying the list of names
+
+### Example script to update all data
+
+### Converting the application to use _id
+
+### Creating an API to propose a name
+
+### Wiring the proposed new name form
+
+### Challenges and QA
+
+### Alternatives: MERN and Electrode
