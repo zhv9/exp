@@ -26,21 +26,29 @@ npm i -D eslint eslint-plugin-react babel-eslint
 ```
 ### Create files
 
+创建一些文件
+
 src/index.js
 public/index.html
 api/index.js
 server.js
 
-### Add script
+### Add configuration
 
-package.json
+#### package.json
+
+在 package.json 中创建一些常用的命令
+
 ```json
 "scripts": {
   "start": "nodemon --exec babel-node server.js --ignore public/",
   "dev": "webpack -wd"
 },
 ```
-webpack.config.js
+
+#### webpack.config.js
+
+设置使用 webpack 打包的时候需要执行的操作
 
 ```js
 const path = require('path');
@@ -65,7 +73,9 @@ module.exports = {
 };
 ```
 
-babel.config.js
+#### babel.config.js
+
+babel 设置
 
 ```js
 module.exports = {
@@ -74,9 +84,16 @@ module.exports = {
 };
 ```
 
-eslintrc.js
+#### eslintrc.js
+
+eslint 设置
+
 
 ## Import module
+
+通过使用 import 导入模块，如果需要导入非 default 的模块，则需要使用解构方法 {...}
+
+下面的 config 是 export default 的模块，其他的是非 default 模块。
 
 ```js
 // server.js
@@ -130,6 +147,8 @@ server.listen(8080);
 ```
 ## Use express
 
+使用 express 可以简化很多东西，比如下面代码中代替“fs”的部分。
+
 ```js
 import config, { nodeEnv, logStars } from './config';
 import express from 'express';
@@ -153,6 +172,8 @@ server.listen(config.port, ()=> {
 });
 ```
 ### Use API router
+
+在使用 API 的时候，可以通过导入 express.Router() 来做。
 
 ```js
 // api/index.js
