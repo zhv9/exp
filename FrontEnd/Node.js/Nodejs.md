@@ -3,6 +3,7 @@
 ## Setup and configurations
 
 ### Install dependencies
+
 https://jscomplete.com/learn/create-javascript-development-environment-node-react
 
 ```sh
@@ -437,7 +438,109 @@ ReactDOM.render(
 
 ### Displaying a list of objects
 
+在显示一个 object 对应的列表内容的时候，一般是将单个内容使用组件包装起来，然后在父组件中将列表中的数据通过包装好的组件填充到界面上。
+
+```js
+// **显示列表中的一个数据**
+import React from 'react';
+
+const ContestPreview = (contest) => (
+  <div className="ContestPreview">
+    <div>
+      {contest.categoryName}
+    </div>
+    <div>
+      {contest.contestName}
+    </div>
+  </div>
+);
+
+export default ContestPreview;
+```
+
+```js
+// 遍历整个列表，每个 object 对应(map)一个 ContestPreview 组件
+render() {
+  return (
+    <div className="App">
+      <Header message={this.state.pageHeader} />
+      <div>
+        // **使用map来遍历整个数组**
+        {this.props.contests.map(contests =>
+          <ContestPreview {...contests} />
+        )}
+        // **显示单个数据**
+        {/* <ContestPreview {...this.props.contests[0]} /> */}
+      </div>
+    </div>
+  );
+}
+```
+
 ### Using Sass with Node
+
+为了让页面显示更好看一些，需要使用 css 样式来应用样式，但是普通的 css 的写法太过麻烦，所以这里使用 sass，并在 ContestPreview 中引用样式。
+
+```css
+.ContestPreview {
+  margin: 1em;
+  border: 1px solid #ccc;
+
+  .category-name {
+    border-bottom: 1px solid #ccc;
+    padding: 0.25em 0.5em;
+    font-weight: bold;
+    background-color: #eee;
+  }
+
+  .contest-name {
+    padding: 0.5em;
+  }
+}
+```
+
+在代码中引用样式
+
+```js
+import React from 'react';
+
+const ContestPreview = (contest) => (
+  <div className="ContestPreview"> // 添加对应的 class
+    <div className="category-name"> // 添加对应的 class
+      {contest.categoryName}
+    </div>
+    <div className="contest-name"> // 添加对应的 class
+      {contest.contestName}
+    </div>
+  </div>
+);
+
+export default ContestPreview;
+```
+
+为了使用 sass 
+
+1. 首先需要安装 node-sass-middleware 来让程序可以识别 sass
+
+```sh
+npm install node-sass-middleware
+```
+
+2. 其次在 server.js 中调用 sassMiddleware 将 sass 编译为 css
+
+```js
+import sassMiddleware from 'node-sass-middleware';
+server.use(sassMiddleware({
+  src: path.join(__dirname, 'sass'), // sass 文件存放的目录
+  dest: path.join(__dirname, 'public') // 生成的 css 文件存放的目录
+}));
+```
+
+3. 然后将 css 文件的引用添加到 header.ejs 中
+
+```html
+<link rel="stylesheet" href="/style.css" media="screen">
+```
 
 ### Reading from the state
 
