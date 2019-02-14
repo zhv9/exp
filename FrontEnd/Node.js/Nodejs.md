@@ -544,11 +544,204 @@ server.use(sassMiddleware({
 
 ### Reading from the state
 
+> map 数据时添加唯一 `key` 的说明：如果对一个列表做动态 `map` 的话，react 就会要求给每一条数据添加一个唯一的 key。所以在 map 任何东西的时候都需要注意给每个子元素添加一个唯一的 `key`。
+
+在正常状况下从API返回的数据会比较慢，这样的话，用上面的方法显示数据就会导致页面已经加载完，但数据还没到的情况。这样会导致页面报错。所以一般会先给页面提供一个**空数据**，这样页面就不会报错了。然后再在后面通过 API 返回值更新这个**数据**。
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+// 模拟 API 数据没有返回的情况
+// import data from './testData';
+import App from './components/App';
+
+ReactDOM.render(
+  // 1. 最初的状态
+  // <App contests={data.contests} />,
+  // 2. 修改后的：初始化的时候给这里传入一个空数组来使页面不会报错
+  <App contests={[]} />,
+  document.getElementById('root')
+);
+```
+
+上面也可以不传数据给 App 组件，而是由 App 组件自己获取数据，并放到组件的 `state` 中，然后在 `componentDidMount()` 中做 `setState` 操作，将数据放入 `state` 的 `contests` 中去，页面会自动在 `state` 修改后更新。
+
+```js
+// 导入数据来模拟 API 调用
+import data from '../testData';
+
+class App extends React.Component {
+  state = {
+    pageHeader: 'Naming Contests',
+    // 在 state 中添加一个 contests
+    contests: []
+  };
+  componentDidMount() {
+    // 在这里添加一个 setState 来模拟 API 调用
+    this.setState({
+      contests: data.contests
+    });
+  }
+  componentWillUnmount() {
+    // clean timers, listeners
+  }
+}
+```
+
 ### Fetching data from a remote API
+
+在前面有在 server.js 中启动了一个类似于下面的 API server，并且在 `api` 目录中有一个 `index.js`。我们可以将这个 `get` 操作作为获取数据的途径。
+
+```js
+server.use('/api', apiRouter);
+server.use(express.static('public'));
+
+server.listen(config.port, () => {
+  console.info('Express listening on port', config.port);
+});
+```
+
+在 API 代码中，我们可以读取磁盘中的数据，然后通过 get API 的 response 发送出去。
+
+```js
+import express from 'express';
+// 导入磁盘中的数据
+import data from '../src/testData';
+
+const router = express.Router();
+
+// 设置 get 的路由，并返回 contests 数据
+router.get('/contests', (req, res) => {
+  res.send({ contests: data.contests });
+});
+
+export default router;
+```
+
+在页面处需要通过 ajax 来获取数据，这时我们就需要一个库来简化操作，这里使用 axios 来做，执行下面的命令获取 axios。
+
+```sh
+npm i -S axios
+```
+
+然后在 componentDidMount() 中添加 axios 调用 api，axios 是基于 `promise` 的，所以后面使用 `then()` 和 `catch()` 来处理后续操作。然后通过 `setState()` 将 API 返回的数据显示到界面上。
+
+```js
+// 引入 axios 模块
+import axios from 'axios';
+
+class App extends React.Component {
+  state = {
+    pageHeader: 'Naming Contests',
+    contests: []
+  };
+   componentDidMount() {
+    // 现在使用的是同一个服务器地址，所以直接写路径就可以了
+    axios.get('/api/contests')
+      .then(resp => {
+        // console.log(resp);
+        // 通过在 setState 中调用返回的 resp 中的数据来更新页面信息
+        this.setState({
+          contests: resp.data.contests
+        });
+      })
+      .catch(console.error);
+   }
+}
+```
 
 ## Rendering on the Server
 
+前面所作的大部分东西都是通过 JavaScript 渲染出来的，如果浏览器不支持 JavaScript 的话，前面的所有东西就都不会显示了。
+
+同时为了优化搜索引擎查询结果，我们需要在服务器端渲染所有数据，然后返回附带数据的完整 html 页面给浏览器。
+
+在取消浏览器中的 JavaScript 后，界面上就只剩下下面代码(server.js)中的 `...` 了。所以要做的就是在这个 server.js 中 get 操作的时候，**预先渲染 react 组件并且使用从 API 获取的数据**。
+
+```js
+import config from './config';
+import apiRouter from './api';
+import sassMiddleware from 'node-sass-middleware';
+import path from 'path';
+
+import express from 'express';
+const server = express();
+
+// ......
+
+server.get('/', (req, res) => {
+  res.render('index', {
+    content: '...'
+  });
+});
+```
+
 ### Fetching data from the server side
+
+首先是需要让 server 代码可以获取 API 数据
+
+1. 创建一个名为 serverRender.js 的文件，在这个文件中我们会从 API 获取数据
+2. 由于需要写完整 url 并且不 hard code 所以需要在 config.js 中添加 url 配置
+3. 在 serverRender.js 中调用 config 中的配置通过 axios 获取 API 中的数据
+4. 在 server.js 中
+   1. 引入 serverRender 来使代码生效
+   2. 由于之前只**监听**了 port，在这里我们也应该**监听**一下对应的 host
+
+> serverRender.js
+
+```js
+// fetch the data from the api
+import config from './config';
+import axios from 'axios';
+
+// 这里不能使用“/api”，因为这是前端部分，所以这里需要写完整的 url。
+// 为了不 hard code 需要去 config.js 中添加 url 设置。添加完设置后可以使用 ${config.serverUrl} 获取值
+// 注：在``中可以使用${}来执行代码，并将返回值直接拼接到字符串上
+axios.get(`${config.serverUrl}/api/contests`)
+  .then(resp => {
+    console.log(resp.data);
+  });
+```
+
+> config.js
+
+```js
+const env = process.env;
+
+export const nodeEnv = env.NODE_ENV || 'development';
+
+export default {
+  port: env.PORT || 8080,
+  // 添加 HOST 设置，0.0.0.0 代表本地 ip
+  host: env.HOST || '0.0.0.0',
+  // 添加获取 url 的方法
+  get serverUrl() {
+    return `http://${this.host}:${this.port}`;
+  }
+};
+```
+
+> server.js
+
+```js
+// 下面做的 import 暂时只是为了使刚才写的代码生效
+import './serverRender';
+
+server.get('/', (req, res) => {
+  res.render('index', {
+    content: '...'
+  });
+});
+
+server.use('/api', apiRouter);
+server.use(express.static('public'));
+
+// 这里添加了 config.host，之前因为是本地的原因就只监听了 config.port，所以这次加全。
+server.listen(config.port, config.host, () => {
+  console.info('Express listening on port', config.port);
+});
+```
 
 ### Server rendering with ReactDOMServer
 
