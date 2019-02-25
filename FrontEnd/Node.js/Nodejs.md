@@ -745,7 +745,137 @@ server.listen(config.port, config.host, () => {
 
 ### Server rendering with ReactDOMServer
 
+为了在 server 端渲染，需要添加 `ReactDOMServer.renderToString`，来将 `<App />`（react 代码） 中所有东西渲染成 html 的字符串。
+
+但是由于之前我们的数据是从 `<App />` 内获取并显示的，这样的话就没有办法在渲染出来了。因此要将获取数据的部分放到生成 html 前，即下面流程：
+
+> 在 `<App />` 内部先给列表一个空对象，渲染一个空列表。
+> 然后用获取到的数据传入 `<App />` 内，`<App initialContests={resp.data.contests} />`。
+> 将 axios 返回值渲染好的 html 包装成函数，函数的返回值是一个 promise。
+> 在 server.js 中就可以调用这个函数，将 promise 返回的数据放入 ejs 的模板中。
+
+但是这样就有个 dom 会渲染两次的问题，它会先渲染一个空的 list 然后根据返回值再渲染一次，这样其实是不好的。
+
+```js
+// serverRender.js
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+
+import App from './src/components/App';
+
+import config from './config';
+import axios from 'axios';
+
+// 在生成 html 以后用函数包装起来
+const serverRender = () =>
+  axios.get(`${config.serverUrl}/api/contests`)
+    .then(resp => {
+      return ReactDOMServer.renderToString(
+        // 通过将 resp 传入 initialContests 来渲染 <App />
+        <App initialContests={resp.data.contests} />
+      );
+    });
+
+export default serverRender;
+
+// ./src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import App from './components/App';
+
+ReactDOM.render(
+  // 添加 initialContests={[]} 让 <App /> 可以传入值
+  <App initialContests={[]} />,
+  document.getElementById('root')
+);
+
+// ./src/components/app.js
+
+  state = {
+    pageHeader: 'Naming Contests',
+    // 将 [] 修改为传入的 this.props.initialContests
+    contests: this.props.initialContests
+  };
+
+// ./server.js
+import serverRender from './serverRender';
+
+server.get('/', (req, res) => {
+  serverRender()
+    // 将返回的数据 render 出来
+    .then(content => {
+      res.render('index', {
+        content
+      });
+    })
+    .catch(console.error);
+});
+```
+
 ### Fix the checksum problem
+
+第一种方式是：我们不用空列表来初始化，而是在生成 html 之前就获取数据，并传给 `<App />` 然后直接渲染出 html。
+
+```js
+// 首先我们不用在 App 中不用去服务器调用数据和 setState 了，然后把其中的 axios 调用放到 src/index.js 中
+axios.get('/api/contests')
+  .then(resp => {
+    ReactDOM.render(
+      <App initialContests={resp.data.contests} />,
+      document.getElementById('root')
+    )
+  })
+  .catch(console.error);
+```
+
+第二种方式是：调用 API 的时候服务器返回两个数据，一个是数据，一个是 react 生成的 html。然后将这两个数据放入 ejs 模板中，生成最终的页面。
+
+```js
+// ./serverRender.js
+const serverRender = () =>
+  axios.get(`${config.serverUrl}/api/contests`)
+    .then(resp => {
+      return {
+        // 第一个返回生成的 html
+        initialMarkup: ReactDOMServer.renderToString(
+          <App initialContests={resp.data.contests} />
+        ),
+        // 第二个返回的是实际使用的数据
+        initialData: resp.data
+      };
+    });
+
+// ./server.js
+server.get('/', (req, res) => {
+  serverRender()
+    // 将两个数据解构，然后放入 ejs 模板中
+    .then(({ initialMarkup, initialData }) => {
+      res.render('index', {
+        initialMarkup,
+        initialData
+      });
+    })
+    .catch(console.error);
+});
+
+// ./view/index.ejs
+// 多增加一个 window.initialData 通过解析 initialData 来获取
+<script type="text/javascript">
+  window.initialData = <%- JSON.stringify(initialData) -%>;
+</script>
+
+<%- include('header') -%>
+  <div id="root"><%- initialMarkup -%></div>
+<%- include('footer') -%>
+
+// ./src/index.js
+// axios 的调用就可以删除掉了，只剩下下面这些东西，然后在传数据的时候使用上面的 initialData。
+ReactDOM.render(
+  <App initialContests={window.initialData.contests} />,
+  document.getElementById('root')
+);
+```
 
 ## Routing on Client and Server
 
