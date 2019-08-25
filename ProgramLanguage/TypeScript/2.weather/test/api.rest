@@ -1,0 +1,3 @@
+GET https://weather01.market.alicloudapi.com/hour24
+?area=成都
+Authorization: APPCODE 1f46614d5cb245b7bfd7ae91a14cb2eb
