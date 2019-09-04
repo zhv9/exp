@@ -1,6 +1,6 @@
 {
    "scripts": {
-      "start": "ts-node src/index.ts"
+      "start": "node -r ts-node/register --inspect=9229 src/index.ts"
    },
    "devDependencies": {
       "@types/node": "^8.0.29",
