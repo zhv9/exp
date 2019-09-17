@@ -71,40 +71,19 @@ async function addUserData(connection: Connection) {
   );
 }
 
-// createConnection()
-//   .then(async connection => {
-//     // create express app
-//     const app = express();
-//     app.use(bodyParser.json());
-
-//     // register express routes from defined application routes
-//     registerRouters(app, Routes);
-//     // setup express app here
-//     // ...
-
-//     // start express server
-//     app.listen(3000);
-
-//     // insert new users for test
-//     addUserData(connection);
-
-//     console.log(
-//       "Express server has started on port 3000. Open http://localhost:3000/users to see results"
-//     );
-//   })
-//   .catch(error => console.log(error));
-
 (async () => {
   const port = 3000;
   const container = new Container();
   await container.loadAsync(bindings);
   const appInversify = new InversifyExpressServer(container);
+  appInversify.setConfig(a=>{
+    a.use(bodyParser.json());
+    a.use(bodyParser.urlencoded({ extended: true }));
+    a.use("/api/v1/movies", movieRouter);
+    registerRouters(a, Routes);
+
+  })
   const app = appInversify.build();
-
-  app.use(bodyParser.json());
-  app.use("/api/v1/movies", movieRouter);
-
-  registerRouters(app, Routes);
 
   app.listen(port, () => {
     console.log(`Server running at http://127.0.0.1:${port}/`);

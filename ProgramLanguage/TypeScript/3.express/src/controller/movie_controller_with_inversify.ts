@@ -49,7 +49,7 @@ export class MovieController {
   }
 
   @httpPost("/")
-  public async post(@request() req: Request, @response() res: Response, @requestBody() newMovie: Movie) {
+  public async post(@response() res: Response, @requestBody() newMovie: Movie) {
     if (
       typeof newMovie.title !== "string" ||
       typeof newMovie.year !== "number"

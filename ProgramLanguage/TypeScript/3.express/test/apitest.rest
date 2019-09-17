@@ -1,8 +1,8 @@
-### get
+### get work item
 GET http://localhost:3000/work-items
 
 
-### post
+### post work item
 POST http://localhost:3000/work-items
 Content-Type: application/json
 Accept: application/json
@@ -22,8 +22,8 @@ Accept: application/json
 Connection: keep-alive
 
 {
-  "firstName": "tester2",
-  "lastName": "fun",
+  "firstName": "tester3",
+  "lastName": "funs",
   "age": 27
 }
 
@@ -33,7 +33,7 @@ GET http://localhost:3000/api/v2/movies
 
 
 ### Post Movies v1 is old way v2 is inversify way
-POST http://localhost:3000/api/v1/movies
+POST http://localhost:3000/api/v2/movies
 Content-Type: application/json
 Accept: application/json
 Connection: keep-alive
