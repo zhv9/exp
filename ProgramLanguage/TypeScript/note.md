@@ -42,4 +42,6 @@ yarn create react-app <my-app> --typescript
 
 yarn add react-router @types/react-router history @types/history
 
+yarn add redux react-redux @types/react-redux react-router-redux@next @types/react-router-redux
+
 ```

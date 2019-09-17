@@ -1,16 +1,19 @@
-import { createBrowserHistory } from "history";
 import React from "react";
-import { Route, Router } from "react-router";
+import { Provider } from "react-redux";
+import { Route } from "react-router";
+import { ConnectedRouter } from "react-router-redux";
 import App from "./App";
 import Edit from "./Edit";
-
-const history = createBrowserHistory();
+import { store } from "./store";
+import { history } from "./store/history";
 
 export default () => (
-  <Router history={history}>
-    <>
-      <Route exact path="/" component={App} />
-      <Route exact path="/edit" component={Edit} />
-    </>
-  </Router>
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <>
+        <Route exact path="/" component={App} />
+        <Route path="/edit" component={Edit} />
+      </>
+    </ConnectedRouter>
+  </Provider>
 );
