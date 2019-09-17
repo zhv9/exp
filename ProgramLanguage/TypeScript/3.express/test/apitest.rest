@@ -22,17 +22,17 @@ Accept: application/json
 Connection: keep-alive
 
 {
-  "firstName": "tester",
+  "firstName": "tester2",
   "lastName": "fun",
   "age": 27
 }
 
 
 ### Get Movies
-GET http://localhost:3000/api/v1/movies
+GET http://localhost:3000/api/v2/movies
 
 
-### Post Movies
+### Post Movies v1 is old way v2 is inversify way
 POST http://localhost:3000/api/v1/movies
 Content-Type: application/json
 Accept: application/json

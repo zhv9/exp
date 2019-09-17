@@ -13,6 +13,9 @@ import { User } from "./entity/User";
 import { WorkItem } from "./entity/WorkItem";
 import { getDbConnection } from "./db";
 import { movieRouter } from "./controller/movie_controller";
+import { Container } from "inversify";
+import { bindings } from "./inversify.config";
+import { InversifyExpressServer } from "inversify-express-utils";
 
 function registerRouters(app, routes) {
   // register express routes from defined application routes
@@ -92,9 +95,12 @@ async function addUserData(connection: Connection) {
 //   .catch(error => console.log(error));
 
 (async () => {
-  await getDbConnection();
   const port = 3000;
-  const app = express();
+  const container = new Container();
+  await container.loadAsync(bindings);
+  const appInversify = new InversifyExpressServer(container);
+  const app = appInversify.build();
+
   app.use(bodyParser.json());
   app.use("/api/v1/movies", movieRouter);
 

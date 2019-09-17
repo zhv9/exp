@@ -1,50 +1,67 @@
-import { Router } from "express";
-import { getRepository } from "../repositories/movie_repository";
-import { Movie } from "../Entity/Movie";
+import { Response } from "express";
+import { inject } from "inversify";
+import {
+  controller,
+  httpGet,
+  httpPost,
+  requestBody,
+  requestParam,
+  response,
+  request
+} from "inversify-express-utils";
+import { Repository } from "typeorm";
+import { TYPE } from "../constants/types";
+import { Movie } from "../entity/Movie";
+import { Request } from "express-serve-static-core";
 
-const movieRouter = Router();
-
-movieRouter.get("/", function(req, res) {
-  const movieRepository = getRepository();
-  movieRepository
-    .find()
-    .then(movies => {
-      res.json(movies);
-    })
-    .catch((e: Error) => {
-      res.status(500);
-      res.send(e.message);
-    });
-});
-
-movieRouter.get("/:year", function(req, res) {
-  const movieRepository = getRepository();
-  movieRepository
-    .find({ year: Number(req.params.year) })
-    .then(movies => {
-      res.json(movies);
-    })
-    .catch((e: Error) => {
-      res.status(500);
-      res.send(e.message);
-    });
-});
-
-movieRouter.post("/", async function(req, res) {
-  const movieRepository = getRepository();
-  const newMovie = req.body;
-
-  if (typeof newMovie.title !== "string" || typeof newMovie.year !== "number") {
-    res.status(400);
-    res.send(`Invalid Movie!`);
+@controller("/api/v2/movies")
+export class MovieController {
+  private readonly movieRepository: Repository<Movie>;
+  public constructor(
+    @inject(TYPE.MovieRepository)
+    movieRepository: Repository<Movie>
+  ) {
+    this.movieRepository = movieRepository;
   }
-  try {
-    const response = await movieRepository.save(newMovie);
-    res.send(response);
-  } catch (error) {
-    res.status(500);
-    res.send(error.message);
-  }
-});
 
-export { movieRouter };
+  @httpGet("/")
+  public async get(@response() res: Response) {
+    try {
+      return await this.movieRepository.find();
+    } catch (error) {
+      res.status(500);
+      res.send(error.message);
+    }
+  }
+
+  @httpGet("/:year")
+  public async getByYear(
+    @requestParam("year") yearPara: string,
+    @response() res: Response
+  ) {
+    try {
+      const year = parseInt(yearPara);
+      return await this.movieRepository.find({ year });
+    } catch (error) {
+      res.status(500);
+      res.send(error.message);
+    }
+  }
+
+  @httpPost("/")
+  public async post(@request() req: Request, @response() res: Response, @requestBody() newMovie: Movie) {
+    if (
+      typeof newMovie.title !== "string" ||
+      typeof newMovie.year !== "number"
+    ) {
+      res.status(400);
+      res.send(`Invalid Movie!`);
+    }
+    try {
+      return await this.movieRepository.save(newMovie);
+    } catch (error) {
+      res.status(500);
+      res.send(error.message);
+    }
+  }
+}
