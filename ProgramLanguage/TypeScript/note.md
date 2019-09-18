@@ -44,4 +44,7 @@ yarn add react-router @types/react-router history @types/history
 
 yarn add redux react-redux @types/react-redux react-router-redux@next @types/react-router-redux
 
+# install sass
+npm i node-sass --sass_binary_site=https://npm.taobao.org/mirrors/node-sass/ --save-dev
+npm i sass -loader --save-dev
 ```

@@ -1,21 +1,16 @@
-import "reflect-metadata";
-import {
-  createConnection,
-  getManager,
-  Connection,
-  getConnection
-} from "typeorm";
-import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
-import { Routes } from "./routes";
+import { Container } from "inversify";
+import { InversifyExpressServer } from "inversify-express-utils";
+import * as path from "path";
+import "reflect-metadata";
+import { Connection, getConnection } from "typeorm";
+import { movieRouter } from "./controller/movie_controller";
 import { User } from "./entity/User";
 import { WorkItem } from "./entity/WorkItem";
-import { getDbConnection } from "./db";
-import { movieRouter } from "./controller/movie_controller";
-import { Container } from "inversify";
 import { bindings } from "./inversify.config";
-import { InversifyExpressServer } from "inversify-express-utils";
+import { Routes } from "./routes";
+import express = require("express");
 
 function registerRouters(app, routes) {
   // register express routes from defined application routes
@@ -76,16 +71,17 @@ async function addUserData(connection: Connection) {
   const container = new Container();
   await container.loadAsync(bindings);
   const appInversify = new InversifyExpressServer(container);
-  appInversify.setConfig(a=>{
-    a.use(bodyParser.json());
-    a.use(bodyParser.urlencoded({ extended: true }));
-    a.use("/api/v1/movies", movieRouter);
-    registerRouters(a, Routes);
+  appInversify.setConfig(app => {
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use("/api/v1/movies", movieRouter);
+    registerRouters(app, Routes);
+    const appPath = path.join(__dirname, "../../public");
+    app.use("/", express.static(appPath));
+  });
+  const server = appInversify.build();
 
-  })
-  const app = appInversify.build();
-
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Server running at http://127.0.0.1:${port}/`);
   });
   const conn = getConnection();
