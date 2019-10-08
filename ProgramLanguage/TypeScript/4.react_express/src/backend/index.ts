@@ -12,6 +12,7 @@ import { Routes } from "./routes";
 import { User } from "./entity/User";
 import { WorkItem } from "./entity/WorkItem";
 import { getDbConnection } from "./db";
+import * as path from "path";
 import { movieRouter } from "./controller/movie_controller";
 import { Container } from "inversify";
 import { bindings } from "./inversify.config";
@@ -76,13 +77,14 @@ async function addUserData(connection: Connection) {
   const container = new Container();
   await container.loadAsync(bindings);
   const appInversify = new InversifyExpressServer(container);
-  appInversify.setConfig(a=>{
+  appInversify.setConfig(a => {
     a.use(bodyParser.json());
     a.use(bodyParser.urlencoded({ extended: true }));
+    const appPath = path.join(__dirname, "../../public");
+    a.use("/", express.static(appPath));
     a.use("/api/v1/movies", movieRouter);
     registerRouters(a, Routes);
-
-  })
+  });
   const app = appInversify.build();
 
   app.listen(port, () => {
