@@ -1,0 +1,187 @@
+{
+    "root": {
+        "data": {
+            "id": "bxq71y1ug4g0",
+            "created": 1571152429916,
+            "text": "VSCode"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "bxq75iouog80",
+                    "created": 1571152709935,
+                    "text": "主要部件"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "by3ushyrglk0",
+                            "created": 1572539675698,
+                            "text": "Electron: UI",
+                            "expandState": "expand"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "bxq7hxk9h4w0",
+                                    "created": 1571153682679,
+                                    "text": "Monaco Editor"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "by3utfeicuo0",
+                                    "created": 1572539748484,
+                                    "text": "Extension Host"
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "bxq77rjd19s0",
+                            "created": 1571152885922,
+                            "text": "Language Server Protocol"
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "bxq7apsn1sw0",
+                            "created": 1571153117222,
+                            "text": "Debug Adapter Protocol"
+                        },
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "bxq7ca8568w0",
+                    "created": 1571153240059,
+                    "text": "插件",
+                    "expandState": "expand"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "bxq728tlq940",
+                            "created": 1571152453362,
+                            "text": "自定义设置"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "bxq72da3v8g0",
+                                    "created": 1571152463067,
+                                    "text": "命令",
+                                    "image": "https://code.visualstudio.com/assets/api/extension-guides/commands/palette.png",
+                                    "imageTitle": "Command",
+                                    "imageSize": {
+                                        "width": 200,
+                                        "height": 27
+                                    }
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "bxq72fc7irc0",
+                                    "created": 1571152467548,
+                                    "text": "设置项"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "bxq72kbowk00",
+                                    "created": 1571152478400,
+                                    "text": "快捷键"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "bxq80igr3wg0",
+                                    "created": 1571155138734,
+                                    "text": "右键菜单"
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "bxq77aazjvs0",
+                            "created": 1571152848411,
+                            "text": "自定义主题，活动栏项目，webview，显示提示框，显示进度条，从文本输入框获取输入(QuickPick)",
+                            "image": "https://code.visualstudio.com/assets/api/extension-capabilities/extending-workbench/workbench-contribution.png",
+                            "imageTitle": "tree view and web view",
+                            "imageSize": {
+                                "width": 200,
+                                "height": 139
+                            }
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "bxq7lp5lnxc0",
+                            "created": 1571153977835,
+                            "text": "编程语言",
+                            "expandState": "expand"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "bxq7mi9pc8o0",
+                                    "created": 1571154041211,
+                                    "text": "实现新编程语言功能"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "bxq7d5g2o680",
+                                    "created": 1571153308019,
+                                    "text": "代码提示，跳转，自动补全"
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "bxq784tf1l40",
+                            "created": 1571152914828,
+                            "text": "限制(Extension Host)"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "bxq786n5o4o0",
+                                    "created": 1571152918804,
+                                    "text": "不能修改VSCode UI的DOM"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "bxq7e7kogf40",
+                                    "created": 1571153391015,
+                                    "text": "插件不能在VSCode主线程运行，\n所有插件共享同一个线程"
+                                },
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "template": "default",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}
