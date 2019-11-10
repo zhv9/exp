@@ -69,7 +69,7 @@
                         "data": {
                             "id": "bxq728tlq940",
                             "created": 1571152453362,
-                            "text": "自定义设置"
+                            "text": "通用功能"
                         },
                         "children": [
                             {
@@ -109,6 +109,22 @@
                                     "text": "右键菜单"
                                 },
                                 "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "byc56xc2f680",
+                                    "created": 1573381497005,
+                                    "text": "从文本输入框获取输入"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "byc57csio080",
+                                    "created": 1573381530651,
+                                    "text": "存储数据(localStorage)"
+                                },
+                                "children": []
                             }
                         ]
                     },
@@ -116,7 +132,7 @@
                         "data": {
                             "id": "bxq77aazjvs0",
                             "created": 1571152848411,
-                            "text": "自定义主题，活动栏项目，webview，显示提示框，显示进度条，从文本输入框获取输入(QuickPick)",
+                            "text": "自定义主题，活动栏项目，webview，显示提示框，显示进度条",
                             "image": "https://code.visualstudio.com/assets/api/extension-capabilities/extending-workbench/workbench-contribution.png",
                             "imageTitle": "tree view and web view",
                             "imageSize": {
@@ -125,6 +141,31 @@
                             }
                         },
                         "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "byc58la6hw00",
+                            "created": 1573381627497,
+                            "text": "自定义主题"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "byc58o3hkuo0",
+                                    "created": 1573381633623,
+                                    "text": "界面颜色和高亮颜色"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "byc58qa1zig0",
+                                    "created": 1573381638374,
+                                    "text": "图标"
+                                },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "data": {
@@ -147,6 +188,14 @@
                                     "id": "bxq7d5g2o680",
                                     "created": 1571153308019,
                                     "text": "代码提示，跳转，自动补全"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "byc582ihaao0",
+                                    "created": 1573381586640,
+                                    "text": "代码调试"
                                 },
                                 "children": []
                             }
