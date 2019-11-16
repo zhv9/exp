@@ -27,6 +27,20 @@
 ### 设计模式
 > [设计模式](./DesignPattern/设计模式.md)
 
+### 编程语言
+
+> [编程语言](./ProgramLanguage)
+
+### 前端开发
+
+> [Node.js](./FrontEnd/Node.js)
+> [React](./FrontEnd/React)
+> [VSCode 插件开发](./FrontEnd/VSCodeExtension)
+
+## 功能测试相关
+
+> [功能测试](./functionTest)
+
 ## 工具使用
 
 ### Git
