@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getRepository } from "../repositories/movie_repository";
+import { getMovieRepository } from "../repositories/movie_repository";
 import { Movie } from "../Entity/Movie";
 
 const movieRouter = Router();
 
 movieRouter.get("/", function(req, res) {
-  const movieRepository = getRepository();
+  const movieRepository = getMovieRepository();
   movieRepository
     .find()
     .then(movies => {
@@ -18,7 +18,7 @@ movieRouter.get("/", function(req, res) {
 });
 
 movieRouter.get("/:year", function(req, res) {
-  const movieRepository = getRepository();
+  const movieRepository = getMovieRepository();
   movieRepository
     .find({ year: Number(req.params.year) })
     .then(movies => {
@@ -31,7 +31,7 @@ movieRouter.get("/:year", function(req, res) {
 });
 
 movieRouter.post("/", async function(req, res) {
-  const movieRepository = getRepository();
+  const movieRepository = getMovieRepository();
   const newMovie = req.body;
 
   if (typeof newMovie.title !== "string" || typeof newMovie.year !== "number") {
