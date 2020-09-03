@@ -60,7 +60,7 @@ function Summary() {
 
 使用 hooks 相对于 class 组件的一大优势在于非常容易重构，如果想把上面看起来很复杂的组件按照业务提取出来，那么基本上只要一些复制粘贴的操作就行了。
 
-参考 [Custom hooks]()
+参考 [Custom hooks](#Custom-hooks)
 
 ## setState
 
