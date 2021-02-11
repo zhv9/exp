@@ -220,6 +220,8 @@ UpgradeLog*.htm
 # SQL Server files
 *.mdf
 *.ldf
+*.sqlite
+*.db
 
 # Business Intelligence projects
 *.rdl.data
@@ -235,6 +237,8 @@ FakesAssemblies/
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 node_modules/
+package-lock.json
+yarn.lock
 
 # Typescript v1 declaration files
 typings/
