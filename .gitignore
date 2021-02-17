@@ -318,6 +318,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+*.exe
+
 # Compiled class file
 *.class
 
