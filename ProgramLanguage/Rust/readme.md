@@ -422,6 +422,38 @@ fn main() {
 }
 ```
 
+Struct 也可以像元组一样做解构，做法如下
+
+```rust
+struct Person { // 创建一个 Person 的结构体
+    name: String,
+    real_name: String,
+    height: u8,
+    happiness: bool,
+}
+
+fn main() {
+    let papa_doc = Person { // 创建一个变量 pap_doc
+        name: "Papa Doc".to_string(),
+        real_name: "Clarence".to_string(),
+        height: 170,
+        happiness: false,
+    };
+
+    let Person { // 解构 pap_doc
+        name: a, // 可以给解构的变量像这样重新命名
+        real_name, // 也可以直接用原来的名字
+        height,
+        happiness,
+    } = papa_doc;
+
+    println!(
+        "They call him {} but his real name is {}. He is {} cm tall and is he happy? {}",
+        a, real_name, height, happiness
+    );
+}
+```
+
 ## Enums 枚举
 
 enum 和 struct 写起来有些相似，枚举是提供选择的，结构体是组合数据的。
@@ -533,6 +565,154 @@ fn main() {
             Number::I32(number) => println!("It's an i32 with the value {}", number),
         }
     }
+}
+```
+
+## Implementing structs and enums 结构体和枚举的实现
+
+struct 和 enum 就类似于一种数据结构，而对它们 `impl` 就是给他们增加操作数据的方法。这样将数据和操作分开的方式虽然不太符合 OO 但是这样有更大的灵活性和扩展性。
+
+`#[]` 叫做特性(attributes)，使用这个标志可以告诉编译器，给这个结构体 `Debug` 的功能，还有其他很多种特性可以通过这个标志使用。
+
+- 一般方法：使用 `.` 来调用。(Regular methods)
+- 关联方法：使用 `::` 来调用。(Associated methods (or "static" methods))
+
+```rust
+#[derive(Debug)] // 有了这个 Debug 就可以使用 {:?} 来打印这个结构体了
+struct Animal {
+    age: u8,
+    animal_type: AnimalType,
+}
+
+#[derive(Debug)]
+enum AnimalType {
+    Cat,
+    Dog,
+}
+
+impl Animal {
+    fn new() -> Self {
+        // Self 就是 Animal.
+        // 也可以用 Animal 代替 Self
+
+        Self {
+            // 当写 Animal::new() 时我们就得到了一个 10 岁的 cat
+            age: 10,
+            animal_type: AnimalType::Cat,
+        }
+    }
+
+    fn change_to_dog(&mut self) { // 因为是在 Animal 中, &mut self 也就意味着 &mut Animal
+                                  // 使用 .change_to_dog() 来把 Cat 换成 Dog
+                                  // 只要有 &mut self 就可以修改
+        println!("Changing animal to dog!");
+        self.animal_type = AnimalType::Dog;
+    }
+
+    fn change_to_cat(&mut self) {
+        // use .change_to_cat() to change the dog to a cat
+        // with &mut self we can change it
+        println!("Changing animal to cat!");
+        self.animal_type = AnimalType::Cat;
+    }
+
+    fn check_type(&self) {
+        // 可以通过 check_type 来检查当前的状态
+        match self.animal_type {
+            AnimalType::Dog => println!("The animal is a dog"),
+            AnimalType::Cat => println!("The animal is a cat"),
+        }
+    }
+}
+
+impl AnimalType { // 通过 impl 也可以对 enum 实现其方法
+    fn check(&self) {
+        match self {
+            AnimalType::Cat => println!("I am cat"),
+            AnimalType::Dog => println!("I am dog"),
+        }
+    }
+}
+
+fn main() {
+    let mut new_animal = Animal::new(); // 用关联方法创建一个 animal
+                                        // 它是一个 10 岁的 cat
+    new_animal.check_type(); // 使用 impl Animal 中的方法
+    new_animal.change_to_dog();
+    new_animal.check_type();
+    new_animal.change_to_cat();
+    new_animal.check_type();
+
+    new_animal.animal_type.check(); // 使用 impl AnimalType(enum) 中的方法
+}
+```
+
+## Generics 泛型
+
+和其他有泛型的语言写法类似，泛型写在尖括号里面。
+
+```rust
+fn return_number<T>(number: T) -> T {
+    println!("Here is your number.");
+    number
+}
+
+fn main() {
+    let number = return_number(5);
+}
+```
+
+有些时候，需要对泛型的实现进行规定，比如想打印就需要有 `Display` 或 `Debug` 那么需要使用 `T: Display` 来规定其必须包含的实现。如果需要多个实现，则可以用 `+` 来增加实现 `T: Display + PartialOrd`。
+
+```rust
+use std::fmt::Display;
+use std::cmp::PartialOrd;
+
+fn compare_and_display<T: Display, U: Display + PartialOrd>(statement: T, num_1: U, num_2: U) {
+    println!("{}! Is {} greater than {}? {}", statement, num_1, num_2, num_1 > num_2);
+}
+
+fn main() {
+    compare_and_display("Listen up!", 9, 8);
+}
+```
+
+如果需要实现的特性太多，尖括号中内容很多的时候，也可以用 `where` 放到函数代码段前
+
+```rust
+use std::cmp::PartialOrd;
+use std::fmt::Display;
+
+fn compare_and_display<T, U>(statement: T, num_1: U, num_2: U)
+where
+    T: Display,
+    U: Display + PartialOrd,
+{
+    println!("{}! Is {} greater than {}? {}", statement, num_1, num_2, num_1 > num_2);
+}
+
+fn main() {
+    compare_and_display("Listen up!", 9, 8);
+}
+```
+
+另外，如果需要使用非参数中的类型，则可以在使用时也用尖括号来定义内部类型 `let new_data = change_type::<&str, String>("a")`
+
+```rust
+fn print_type_of<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>())
+}
+
+fn change_type<T, U: From<T>>(data: T) -> U {
+    println!("Here is your number.");
+    let new_data: U = data.into();
+    new_data
+}
+
+fn main() {
+    let new_data = change_type::<&str, String>("a");
+    print!("Data is {} and new type is ", new_data);
+    print_type_of(&new_data);
 }
 ```
 
