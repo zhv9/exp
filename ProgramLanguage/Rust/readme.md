@@ -716,6 +716,376 @@ fn main() {
 }
 ```
 
+## Option and Result
+
+Option 和 Result 是为了让 Rust 更安全。
+
+### Option
+
+Option 是在不确定数据存在或不存在时用的。在数据存在时使用 `Some(value)` 不存在的时候使用 `None`。
+
+```rust
+fn take_fifth(value: Vec<i32>) -> i32 {
+    value[4]
+}
+
+fn main() {
+    let new_vec = vec![1, 2];
+    let index = take_fifth(new_vec); // 在这里就会报 panic 因为 index 超过边界
+}
+```
+
+所以需要使用 `enum Option<T> { None, Some(T) }` 来包裹返回值。可以通过以下方法处理 `Option`
+
+- match: 用 `match` 处理 `Some<T>` 和 `None`
+- is_some(): 在 `Option<T>` 类型上使用 `.is_some()` 方法来检查是否是 `Some<T>`
+
+```rust
+fn take_fifth(value: Vec<i32>) -> Option<i32> {
+    if value.len() < 5 {
+        // .len() gives the length of the vec.
+        // It must be at least 5.
+        None
+    } else {
+        Some(value[4])
+    }
+}
+
+fn handle_option(option: Option<i32>) {
+    match option {
+        Some(number) => println!("Found a {}", number),
+        None => println!("Found a None"),
+    }
+}
+
+fn main() {
+    let new_vec = vec![1, 2];
+    let bigger_vec = vec![1, 2, 3, 4, 5];
+    println!("{:?}, {:?}", take_fifth(new_vec), take_fifth(bigger_vec)); // None, Some(5)
+
+    // 如果需要取 Some 中的数据，则需要对其 unwrap 也就是 take_fifth(bigger_vec).unwrap();
+    // 但是 None 是不能 unwrap 的，take_fifth(new_vec).unwrap(); 就会报错
+
+    // 可以通过 match 来取 Some 中的数据
+    handle_option(take_fifth(vec![1, 2])); // Found a None
+    handle_option(take_fifth(vec![1, 2, 3, 4, 5])); // Found a 5
+
+    // 另外还可以通过 .is_some(); 来检查是否 Some<T>
+    let new_vec = vec![1, 2, 3, 4, 5];
+    let got_fifth = take_fifth(new_vec);
+    if got_fifth.is_some() {
+        println!("Got a {}", got_fifth.unwrap());
+    } else {
+        println!("Got None");
+    }
+}
+```
+
+### Result
+
+`Option` 是确定有或没有的，而 `Result` 是用来确定是否报错的 `enum Result<T, E> { Ok(T), Err(E) }` 其中 `T` 是 `Ok` 的返回类型，`E` 是 `Err` 的返回类型
+
+处理 `Result` 和 `Option` 类似
+
+- match: 用 `match` 处理 `Ok<T>` 和 `Err<E>`
+- is_ok(): 在 `Result<T, E>` 类型上使用 `.is_ok()` 来检查是否是 `Ok<T>`
+- 
+
+```rust
+fn give_result(input: i32) -> Result<(), ()> {
+    if input % 2 == 0 {
+        return Ok(())
+    } else {
+        return Err(())
+    }
+}
+
+fn main() {
+    if give_result(5).is_ok() {
+        println!("It's okay, guys")
+    } else {
+        println!("It's an error, guys")
+    }
+}
+```
+
+```rust
+fn check_if_five(number: i32) -> Result<i32, String> {
+    match number {
+        5 => Ok(number),
+        _ => Err("Sorry, the number wasn't five.".to_string()), // This is our error message
+    }
+}
+
+fn main() {
+    let mut result_vec = Vec::new(); // Create a new vec for the results
+
+    for number in 2..7 {
+        result_vec.push(check_if_five(number)); // push each result into the vec
+    }
+
+    println!("{:?}", result_vec);
+}
+```
+
+## `if let` and `while let`
+
+如果对 None 或者 Err 的结果不关心，那还可以使用 `if let` 表达式来处理。
+
+`if let Some(number) = my_vec.get(index)` 意思是如果从 `my_vec.get(index)` 获取 `Some(number)`
+
+```rust
+fn main() {
+    let my_vec = vec![2, 3, 4];
+
+    for index in 0..10 {
+      if let Some(number) = my_vec.get(index) {
+        println!("The number is: {}", number);
+      }
+    }
+}
+```
+
+`while let` 类型于 `if let` 的循环版
+
+```rust
+fn main() {
+    let weather_vec = vec![
+        vec!["Berlin", "cloudy", "5", "-7", "78"],
+        vec!["Athens", "sunny", "not humid", "20", "10", "50"],
+    ];
+    for mut city in weather_vec {
+        println!("For the city of {}:", city[0]); // 数据中第一个数据是城市信息
+        while let Some(information) = city.pop() {
+            // 这个意味着: 一直循环到 pop 完数据
+            // 当 vector 中没有数据可以 pop 则会返回 None，这时就跳出循环了
+            if let Ok(number) = information.parse::<i32>() {
+                // 尝试 parse information，它的结果如果是 Ok(number) 则会打印出来
+                println!("The number is: {}", number);
+            }  // 不需要再写其他代码，因为在出现错误时不需要做任何事，错误结果都丢弃掉
+        }
+    }
+}
+```
+
+## ? 操作符
+
+这个 ? 操作符只能放在自定义函数中，而不能放到 main 函数中，自定义函数的返回值需要是 `Result<T, E>` 类型。在一个表达式之后使用 ? 操作符后，如果该操作正常则正常向下执行，如果报错，则不继续执行且立即返回 `Err<E>`，`Err` 中的内容取决于报错的内容。
+
+```rust
+fn parse_str(input: &str) -> Result<i32, std::num::ParseIntError> {
+    let parsed_number = input.parse::<i32>()?;
+    Ok(parsed_number)
+}
+
+fn main() {
+    let str_vec = vec!["Seven", "8", "9.0", "nice", "6060"];
+    for item in str_vec {
+        let parsed = parse_str(item);
+        println!("{:?}", parsed);
+    }
+}
+```
+
+上面的例子看不出来多大用处，其实主要的用处在于链式调用时的处理，可以简化很多错误处理
+
+```rust
+use std::num::ParseIntError;
+
+fn parse_str(input: &str) -> Result<i32, ParseIntError> {
+    let parsed_number = input.parse::<u16>()?.to_string().parse::<u32>()?.to_string().parse::<i32>()?; // 每次添加 ? 来检查是否可以继续将值传递下去
+    Ok(parsed_number)
+}
+
+fn main() {
+    let str_vec = vec!["Seven", "8", "9.0", "nice", "6060"];
+    for item in str_vec {
+        let parsed = parse_str(item);
+        println!("{:?}", parsed);
+    }
+}
+```
+
+## Traits (特征，特质)
+
+之前使用的 `Debug`, `Copy`, `Clone` 都是 traits。在给一个类型 trait 时，需要实现它。由于 `Debug` 非常常用，所以有些特性(attributes) 可以做自动实现。在写 `#[derive(Debug)]` 时就自动实现了 `Debug`。
+
+trait 主要是给结构体定义方法的，还可以给 trait 上 添加 traits 有以下几种形式：
+
+- 方法仅定义在 trait 中，impl 实现为空，不能使用结构体中的数据
+- 方法在 trait 中定义，impl 实现覆写方法，此时可以使用 `&self` 调用结构体中的数据
+- trait 中定义方法签名，impl 实现中定义方法内容，此时可以使用 `&self` 调用结构体中的数据
+- 给结构体实现特定 trait：https://doc.rust-lang.org/std/fmt/trait.Display.html
+- 在定义 trait 时通过 `:` 为其添加 trait 
+- trait 和 impl 实现中都不定义内容，只是对其进行组合约定类型。然后在外部方法中对其操作
+
+具体参考 https://dhghomon.github.io/easy_rust/Chapter_34.html
+
+### 基本的使用方法
+
+```rust
+struct Animal { // A simple struct - an Animal only has a name
+    name: String,
+}
+
+trait Dog { // The dog trait gives some functionality
+    fn bark(&self) { // It can bark
+        println!("Woof woof!");
+    }
+    fn run(&self) { // and it can run
+        println!("The dog is running!");
+    }
+}
+
+impl Dog for Animal {
+    fn run(&self) {
+        println!("{} is running!", self.name); // 因为在实现内，可以知道结构体中的数据
+    }
+}
+
+fn main() {
+    let rover = Animal {
+        name: "Rover".to_string(),
+    };
+
+    rover.bark(); // Now Animal can use bark()
+    rover.run();  // and it can use run()
+}
+```
+
+### 给 trait 添加 trait
+
+```rust
+struct Monster {
+    health: i32,
+}
+
+#[derive(Debug)] // Now Wizard has Debug
+struct Wizard {
+    health: i32, // Now Wizard has health
+}
+#[derive(Debug)] // So does Ranger
+struct Ranger {
+    health: i32, // So does Ranger
+}
+
+trait FightClose: std::fmt::Debug { // Now a type needs Debug to use FightClose
+    fn attack_with_sword(&self, opponent: &mut Monster) {
+        opponent.health -= 10;
+        println!(
+            "You attack with your sword. Your opponent now has {} health left. You are now at: {:?}", // We can now print self with {:?} because we have Debug
+            opponent.health, &self
+        );
+    }
+    fn attack_with_hand(&self, opponent: &mut Monster) {
+        opponent.health -= 2;
+        println!(
+            "You attack with your hand. Your opponent now has {} health left.  You are now at: {:?}",
+            opponent.health, &self
+        );
+    }
+}
+impl FightClose for Wizard {}
+impl FightClose for Ranger {}
+
+trait FightFromDistance: std::fmt::Debug { // We could also do trait FightFromDistance: FightClose because FightClose needs Debug
+    fn attack_with_bow(&self, opponent: &mut Monster, distance: u32) {
+        if distance < 10 {
+            opponent.health -= 10;
+            println!(
+                "You attack with your bow. Your opponent now has {} health left.  You are now at: {:?}",
+                opponent.health, self
+            );
+        }
+    }
+    fn attack_with_rock(&self, opponent: &mut Monster, distance: u32) {
+        if distance < 3 {
+            opponent.health -= 4;
+        }
+        println!(
+            "You attack with your rock. Your opponent now has {} health left.  You are now at: {:?}",
+            opponent.health, self
+        );
+    }
+}
+impl FightFromDistance for Ranger {}
+
+fn main() {
+    let radagast = Wizard { health: 60 };
+    let aragorn = Ranger { health: 80 };
+
+    let mut uruk_hai = Monster { health: 40 };
+
+    radagast.attack_with_sword(&mut uruk_hai);
+    aragorn.attack_with_bow(&mut uruk_hai, 8);
+}
+```
+
+### 约定类型，在外部方法中处理
+
+```rust
+use std::fmt::Debug;  // So we don't have to write std::fmt::Debug every time now
+
+struct Monster {
+    health: i32,
+}
+
+#[derive(Debug)]
+struct Wizard {
+    health: i32,
+}
+#[derive(Debug)]
+struct Ranger {
+    health: i32,
+}
+
+trait Magic{} // No methods for any of these traits. They are just trait bounds
+trait FightClose {}
+trait FightFromDistance {}
+
+impl FightClose for Ranger{} // Each type gets FightClose,
+impl FightClose for Wizard {}
+impl FightFromDistance for Ranger{} // but only Ranger gets FightFromDistance
+impl Magic for Wizard{}  // and only Wizard gets Magic
+
+fn attack_with_bow<T: FightFromDistance + Debug>(character: &T, opponent: &mut Monster, distance: u32) {
+    if distance < 10 {
+        opponent.health -= 10;
+        println!(
+            "You attack with your bow. Your opponent now has {} health left.  You are now at: {:?}",
+            opponent.health, character
+        );
+    }
+}
+
+fn attack_with_sword<T: FightClose + Debug>(character: &T, opponent: &mut Monster) {
+    opponent.health -= 10;
+    println!(
+        "You attack with your sword. Your opponent now has {} health left. You are now at: {:?}",
+        opponent.health, character
+    );
+}
+
+fn fireball<T: Magic + Debug>(character: &T, opponent: &mut Monster, distance: u32) {
+    if distance < 15 {
+        opponent.health -= 20;
+        println!("You raise your hands and cast a fireball! Your opponent now has {} health left. You are now at: {:?}",
+    opponent.health, character);
+    }
+}
+
+fn main() {
+    let radagast = Wizard { health: 60 };
+    let aragorn = Ranger { health: 80 };
+
+    let mut uruk_hai = Monster { health: 40 };
+
+    attack_with_sword(&radagast, &mut uruk_hai);
+    attack_with_bow(&aragorn, &mut uruk_hai, 8);
+    fireball(&radagast, &mut uruk_hai, 8);
+}
+```
+
 # Control flow
 
 ## if
