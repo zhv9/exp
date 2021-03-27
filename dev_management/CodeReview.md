@@ -39,7 +39,7 @@ PR的发起人要主动的推动PR的审核，Leader也会密切关注PR审核�
 >Baza Flow
 >当前版本 V0.9
 >Baza Flow 由 Git Flow 演化而来，Git Flow的开发模式如下图所示：
->![](GitFlow.png)
+>![](CodeReview_reference/GitFlow.png)
 由于我们的托管软件对于Pull Request的限制，我们对Git Flow做了改动，改动的地方有：
 
 1. 每一个大功能我们会创建一个单独的feature分支，项目开发人员基于这个单独的feature分支创建自己的任务分支。

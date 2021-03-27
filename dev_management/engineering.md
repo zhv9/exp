@@ -13,7 +13,7 @@
 
 参参照了 gitlab 的工作流程
 
-![开发工作流程](devworkflow.png)
+![开发工作流程](engineering_reference/devworkflow.png)
 
 ## 工作方法
 
@@ -54,9 +54,9 @@
 
 [代码规范](http://csharpcodingguidelines.com/)
 
-[代码规范速查表(中文)](../Reference/CSharpCodingGuidelinesCheatsheet_cn.htm)
+[代码规范速查表(中文)](engineering_reference/CSharpCodingGuidelinesCheatsheet_cn.htm)
 
-[代码规范速查表(英文)](../Reference/CSharpCodingGuidelinesCheatsheet_en.htm)
+[代码规范速查表(英文)](engineering_reference/CSharpCodingGuidelinesCheatsheet_en.htm)
 
 > 安装resharper，并导入配置文件。resharper提示的问题都要修改，提示的warning要解决。
 
