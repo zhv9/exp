@@ -67,7 +67,7 @@ fn main() {
 
 另外它还有其他作用。
 
-## Rc
+## Rc(reference counter 引用计数器)
 
 RC 就是引用计数器，为了让更多地方使用其包裹的变量。用来对所有引用的地方进行计数，当计数为 0 的时候，这个数据就可以清理了。
 
@@ -79,5 +79,69 @@ fn main() {
     println!("first_owner: {}", Rc::strong_count(&first_owner)); // 引用计数为 1
     let new_owner = first_owner.clone(); // 对这个类型 clone 但实际上不是真正的 clone，而是引用计数器加一，实际使用的还是原来的数据。
     println!("After new owner: {}", Rc::strong_count(&first_owner)); // 引用计数为 2
+}
+```
+
+## 多线程
+
+### 创建多线程
+
+下面这个代码有时候会打印有时候不会，因为 `main` 函数有可能会在线程执行完毕前结束。如果多开几个线程的话，有可能部分的线程会打印，也有可能有的会 panic。
+
+```rust
+fn main() {
+    std::thread::spawn(|| {
+        println!("I am printing something");
+    });
+    for _ in 0..10 { // set up ten threads
+        std::thread::spawn(|| {
+            println!("I am printing something in for");
+        });
+    }
+}
+```
+
+为了让 `main` 在所有线程结束后再结束，需要将线程放到一个变量中，然后 `join` 到 `main` 函数中。
+
+```rust
+fn main() {
+    for _ in 0..10 {
+        let handle = std::thread::spawn(|| {
+            println!("I am printing something");
+        });
+
+        handle.join(); // Wait for the threads to finish
+    }
+}
+```
+
+### 线程安全
+
+如果从外部给一个引用(也就是借用)到线程中，则线程可以对其做任何事情。这样的话，在其他线程引用(借用)后，线程就会不安全了。下面代码会报“借用”错误。
+
+```rust
+fn main() {
+    let mut my_string = String::from("Can I go inside the thread?");
+
+    let handle = std::thread::spawn(|| { // 此处会报: may outlive borrowed value `my_string`
+        println!("{}", my_string); // 此处会报: `my_string` is borrowed here
+    });
+    handle.join();
+}
+```
+
+对于解决方法，报的错误中会提示到使用 `move` 来让闭包获取变量所有权。
+
+```rust
+fn main() {
+    let mut my_string = String::from("Can I go inside the thread?");
+
+    let handle = std::thread::spawn(move|| {
+        println!("{}", my_string);
+    });
+
+    // std::mem::drop(my_string);  // 这里不能 drop，因为 handle 拥有 `my_string` 的所有权。如果添加这条代码，则会报错
+
+    handle.join();
 }
 ```
