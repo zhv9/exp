@@ -145,3 +145,46 @@ fn main() {
     handle.join();
 }
 ```
+
+## impl trait
+
+impl trait 和泛型很相似。范型的类型是写在尖括号里面的，而 `impl trait` 是写在参数类型或返回值上的。如果和其他语言比较的话，有些像 `typescript` 的 `type` 和 `typeof`
+
+```rust
+use std::fmt::Display;
+
+fn gives_generic_i32<T: PartialOrd + Display>(n: T) {
+    println!("generic number is {}", n);
+}
+
+fn gives_trait_i32(n: impl PartialOrd + Display) {
+    println!("trait number is {}", n);
+}
+
+fn main() {
+    gives_generic_i32(8);
+    gives_trait_i32(9)
+}
+```
+
+如果写成 ts 的话应该就类似于这样的吧：
+
+```ts
+enum NumberA { // 或使用 const NumberA = { a: 1 } 也是可以的
+  a,
+}
+
+enum NumberB {
+  b,
+}
+// ts 一般不这么处理，都是先定义好 type 然后直接 NumberA & NumberB 就好了，这里主要是为了和 rust 写法一致
+function print_generic_number<T extends typeof NumberA & typeof NumberB>(n: T) {
+  console.log(n);
+}
+function print_trait_number(n: typeof NumberA & typeof NumberB) {
+  console.log(n);
+}
+
+print_generic_number({ a: 2, b: 3 });
+print_trait_number({ a: 2, b: 3 });
+```
