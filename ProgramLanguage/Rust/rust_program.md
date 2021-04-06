@@ -188,3 +188,58 @@ function print_trait_number(n: typeof NumberA & typeof NumberB) {
 print_generic_number({ a: 2, b: 3 });
 print_trait_number({ a: 2, b: 3 });
 ```
+
+## Arc (atomic reference counter 原子引用计数器)
+
+前面的引用计数器可以让变量有多个所有者，但是在线程中，则需要使用 `Arc`。原子意味着使用处理器来操作，这样数据每次处理时只被写入一次。不会出现不同线程同时写入数据造成数据错误的情况。
+
+`Rc` 速度更快一些，所以单线程的时候不使用 `Arc`
+
+```rust
+use std::sync::{Arc, Mutex};
+
+fn main() {
+    let my_number = Arc::new(Mutex::new(0));
+
+    let my_number1 = Arc::clone(&my_number);
+    let my_number2 = Arc::clone(&my_number);
+
+    let thread1 = std::thread::spawn(move || { // 需要将 clone 的数据 move 到线程中
+        for _ in 0..10 {
+            *my_number1.lock().unwrap() += 1; // Lock the Mutex, change the value
+        }
+    });
+
+    let thread2 = std::thread::spawn(move || {
+        for _ in 0..10 {
+            *my_number2.lock().unwrap() += 1;
+        }
+    });
+
+    thread1.join().unwrap();
+    thread2.join().unwrap();
+    println!("Value is: {:?}", my_number);
+    println!("Exiting the program");
+}
+```
+
+## Channel (多生产者单消费者，可用于线程间通信)
+
+```rust
+use std::sync::mpsc::channel; // mpsc: multiple producer, single consumer
+
+fn main() {
+    let (sender, receiver) = channel(); // pub fn channel<T>() -> (Sender<T>, Receiver<T>)
+    let sender_clone = sender.clone();
+
+    std::thread::spawn(move|| { // move sender in
+        sender.send("Send a &str this time").unwrap();
+    });
+
+    std::thread::spawn(move|| { // move sender_clone in
+        sender_clone.send("And here is another &str").unwrap();
+    });
+
+    println!("{}", receiver.recv().unwrap());
+}
+```
