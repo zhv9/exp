@@ -243,3 +243,131 @@ fn main() {
     println!("{}", receiver.recv().unwrap());
 }
 ```
+
+## Attributes (特性)
+
+在 Rust 中的特性是指 `#[derive(Debug)]` 这类代码，写在代码上的特性会告诉编译器对应的信息。使用 `#` 就可以给下一行加特性，如果写成 `#!` 则会应用到它整体。
+
+```rust
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+struct Struct1 {} // 创建 2 个结构体
+struct Struct2 {}
+
+fn main() {
+    let char1 = 'ん'; // 和 4 个变量。虽然都没有使用，但是由于顶部有写两个 allow 的特性，所以编译器没有 warning
+    let char2 = ';';
+    let some_str = "I'm just a regular &str";
+    let some_vec = vec!["I", "am", "just", "a", "vec"];
+}
+```
+
+通过 `#[derive(TraitName)]` 可以为结构体或枚举派生对应的 trait。不过有些 trait 可以有些不行，比如 Display 就不行。使用逗号分隔可以添加多个 trait。
+
+通过 `#[cfg()]` 作用是对代码块做配置，告诉编译器是否运行该代码块。
+
+## Box (在堆上申请内存放置数据)
+
+`Box` 和 `str` 的 `&` 类似，由于 `str` 的长度可以是任意的，但 `&` (引用)是固定长度的，这样编译器就可以使用了。`Box` 和 `&str` 相似，同时可以使用 `*` 来引用其值。
+
+```rust
+fn main() {
+    let my_box = Box::new(1); // This is a Box<i32>
+    let an_integer = *my_box; // This is an i32
+    println!("{:?}", my_box);
+    println!("{:?}", an_integer);
+}
+```
+
+同时 `Box` 也可以递归使用，比如链表就可以用如下代码来表示
+
+```rust
+struct List {
+    item: Option<Box<List>>, // 没有这个 Box 就会报错，因为 List 的长度就会是不定的
+}
+impl List {
+    fn new() -> List {
+        List {
+            item: Some(Box::new(List { item: None })),
+        }
+    }
+}
+fn main() {
+    let mut my_list = List::new();
+}
+```
+
+## impl trait (返回值是 trait 的时候需要用 Box 装箱)
+
+`trait` 可以组合到任意数据类型上，所以它的长度是不定的，如下代码就给各种类型实现了 `JustATrait`。然而如果某个函数需要返回 `JustATrait` 类型，则由于 `trait` 的长度不确定，所以就会报错。既然是因为不确定长度，则这时就可以使用 `Box` 的特性使用栈上的 `Box` 引用堆上的 `trait`。即：`Box<dyn JustATrait>`，其中 `dyn` 是 dynamic 的缩写，代表这是 trait 不是结构体或枚举。
+
+```rust
+#![allow(dead_code)] // Tell the compiler to be quiet
+use std::mem::size_of; // This gives the size of a type
+
+trait JustATrait {} // We will implement this on everything
+
+enum EnumOfNumbers {
+    I8(i8),
+    AnotherI8(i8),
+    OneMoreI8(i8),
+}
+impl JustATrait for EnumOfNumbers {}
+
+struct StructOfNumbers {
+    an_i8: i8,
+    another_i8: i8,
+    one_more_i8: i8,
+}
+impl JustATrait for StructOfNumbers {}
+
+enum EnumOfOtherTypes {
+    I8(i8),
+    AnotherI8(i8),
+    Collection(Vec<String>),
+}
+impl JustATrait for EnumOfOtherTypes {}
+
+struct StructOfOtherTypes {
+    an_i8: i8,
+    another_i8: i8,
+    a_collection: Vec<String>,
+}
+impl JustATrait for StructOfOtherTypes {}
+
+struct ArrayAndI8 {
+    array: [i8; 1000], // This one will be very large
+    an_i8: i8,
+    in_u8: u8,
+}
+impl JustATrait for ArrayAndI8 {}
+
+fn main() {
+    println!(
+        "{}, {}, {}, {}, {}",
+        size_of::<EnumOfNumbers>(),
+        size_of::<StructOfNumbers>(),
+        size_of::<EnumOfOtherTypes>(),
+        size_of::<StructOfOtherTypes>(),
+        size_of::<ArrayAndI8>(),
+    );
+}
+```
+
+```rust
+#![allow(unused)]
+fn main() {
+    // 下面函数的返回值是 JustATrait，由于其长度不定，编译器无法识别
+    fn returns_just_a_trait() -> JustATrait {
+        let some_enum = EnumOfNumbers::I8(8);
+        some_enum
+    }
+    // 下面使用了 Box 就可以解决 JustATrait 长度不确定的问题了，将其装箱放到堆中，使用栈中的 Box 来引用。
+    // 其中 dyn 是 dynamic 的缩写，代表这是 trait 不是结构体或枚举
+    fn returns_just_a_trait() -> Box<dyn JustATrait> {
+        let some_enum = EnumOfNumbers::I8(8);
+        Box::new(some_enum)
+    }
+}
+```
