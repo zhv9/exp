@@ -371,3 +371,101 @@ fn main() {
     }
 }
 ```
+
+## Default (参数默认值)
+
+在 Rust 中每个基本类型都有其默认值，即 `Default::default()`，它可以根据数据类型给定其默认值。
+
+```rust
+fn main() {
+    let default_i8: i8 = Default::default();
+    let default_str: String = Default::default();
+    let default_bool: bool = Default::default();
+
+    println!("'{}', '{}', '{}'", default_i8, default_str, default_bool); // print: '0', '', 'false'
+}
+```
+
+非基本类型如果需要 default 的话，则需要通过 `impl Default for SomeType` 单独为其实现。
+
+```rust
+#[derive(Debug)]
+struct Character {
+    name: String,
+    age: u8,
+    height: u32,
+    weight: u32,
+    lifestate: LifeState,
+}
+
+#[derive(Debug)]
+enum LifeState {
+    Alive,
+    Dead,
+    NeverAlive,
+    Uncertain,
+}
+
+impl Character {
+    fn new(name: String, age: u8, height: u32, weight: u32, alive: bool) -> Self {
+        Self {
+            name,
+            age,
+            height,
+            weight,
+            lifestate: if alive {
+                LifeState::Alive
+            } else {
+                LifeState::Dead
+            },
+        }
+    }
+}
+
+impl Default for Character {
+    fn default() -> Self {
+        Self {
+            name: "Billy".to_string(),
+            age: 15,
+            height: 170,
+            weight: 70,
+            lifestate: LifeState::Alive,
+        }
+    }
+}
+
+fn main() {
+    let character_1 = Character::default(); // 使用 impl Default for Character 后就可以这样来使用默认值了
+
+    println!(
+        "The character {:?} is {:?} years old.",
+        character_1.name, character_1.age
+    );
+}
+```
+
+## Deref and DrefMut (为自定义类型实现使用 `*` 访问数据的 trait)
+
+`Deref` 是为你的类型实现使用 `*` 访问数据的 trait，需要通过 `impl Deref for SomeType` 并定义一个 `fn deref(&self) -> &Self::Target` 来给期望的类型定义引用。在有了 `Deref` 后，对应结构体就可以直接使用引用值可用的方法了。
+
+`DerefMut` 也就是定义可修改的引用。
+
+```rust
+use std::ops::Deref;
+#[derive(Debug)]
+struct HoldsANumber(u8);
+
+impl Deref for HoldsANumber {
+    type Target = u8; // 在这里注明使用引用时返回的类型
+
+    fn deref(&self) -> &Self::Target {
+        &self.0 // 在使用 * 引用值的时候，返回 &self.0
+    }
+}
+
+fn main() {
+    let my_number = HoldsANumber(20);
+    println!("{:?}", *my_number + 20); // 如果不带 impl Deref for HoldsANumber，则不能用 * 引用数据，而只能用 my_number.0 来引用
+    println!("{:?}", my_number.checked_sub(100)); // checked_sub 这个方法来自于 u8，有 Deref 后就可以直接使用了
+}
+```
