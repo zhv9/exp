@@ -469,3 +469,130 @@ fn main() {
     println!("{:?}", my_number.checked_sub(100)); // checked_sub 这个方法来自于 u8，有 Deref 后就可以直接使用了
 }
 ```
+
+## macros (编写宏)
+
+写一个宏可以通过另外一个宏 `macro_rules!` 开头，之后跟着宏的名字和 `{}`。内部有些像 `match`。和 `match` 的区别在于，`match` 的每个条件返回值类型需要是相同的，而宏不需要，主要原因是宏只是获取一个输入然后给出对应的输出。输入的类型确定的时候，输出的类型也就是确定的。并且由于没有 `_` 所以非内部定义的输入，都会报错。
+
+```rust
+macro_rules! six_or_print {
+    (6) => { // 在输入为 6 的时候，返回 6
+        6
+    };
+    () => { // 在输入为元组(默认入参)的时候，打印并返回默认的 ()
+        println!("You didn't give me 6.");
+    };
+}
+
+fn main() {
+    let my_number = six_or_print!(6);
+    let my_tuple = six_or_print!();
+    println!("{:?}", my_number);
+    println!("{:?}", my_tuple);
+}
+```
+
+宏如果只能写确定值的话，那它就很没用了，所以也有办法给其变量来使用，使用 `$input:expr` 来接收参数
+
+```rust
+macro_rules! might_print {
+    ($input:expr) => {
+        println!("You gave me: {:?}", $input); // 使用 {:?} 的原因是可以接收不同种类的数据
+    }
+}
+
+fn main() {
+    might_print!(()); // give it a (), prints: `You gave me: ()`
+    might_print!(6); // give it a 6, prints `You gave me: 6`
+    might_print!(vec![8, 9, 7, 10]); // give it a vec, prints `You gave me: [8, 9, 7, 10]`
+}
+```
+
+除了 `expr` 还可以用 `block | expr | ident | item | lifetime | literal | meta | pat | path | stmt | tt | ty | vis`。
+
+https://doc.rust-lang.org/beta/reference/macros-by-example.html
+
+- `item`: an Item
+- `block`: a BlockExpression
+- `stmt`: a Statement without the trailing semicolon (except for item statements that require semicolons)
+- `pat`: a Pattern
+- `expr`: an Expression
+- `ty`: a Type
+- `ident`: an IDENTIFIER_OR_KEYWORD
+- `path`: a TypePath style path
+- `tt`: a TokenTree (a single token or tokens in matching delimiters (), [], or {})
+- `meta`: an Attr, the contents of an attribute
+- `lifetime`: a LIFETIME_TOKEN
+- `vis`: a possibly empty Visibility qualifier
+- `literal`: matches -?LiteralExpression
+
+### 常用宏入参
+
+宏中比较常用的是 `expr`，`ident` 和 `tt`。
+
+- `expr` 可以接收表达式，变量等。
+- `ident` 可以接收变量或函数名称的标识，但不能接收表达式。编译时会进行宏的展开，这个标识在宏中处理后可以直接在宏外部使用
+- `tt` token tree 接收一个 token(符号，标识符)，默认不接收空格、逗号一类东西。否则它会认为给了它超过一个东西或其他信息。
+
+### expr & ident
+
+```rust
+macro_rules! check {
+    ($input1:ident, $input2:expr) => {
+        println!(
+            "Is {:?} equal to {:?}? {:?}",
+            $input1,
+            $input2,
+            $input1 == $input2
+        );
+    };
+}
+
+fn main() {
+    let x = 6;
+    let my_vec = vec![7, 8, 9];
+    check!(x, 6);
+    check!(my_vec, vec![7, 8, 9]);
+    // check!(vec![7, 8, 9], my_vec); // 第一个由于是 ident 所以不能接收 vec![7, 8, 9] 这种表达式参数
+    check!(x, 10);
+}
+```
+
+### tt
+
+如果要给 tt 多于一个参数，需要使用 `$($input:tt),*)`，意思是用逗号分隔数据有 0 个或多个。这个 `*` 也可以是 `+` 或 `?`，意义和正则中的意义一样。
+
+```rust
+macro_rules! print_anything {
+    ($($input1:tt),*) => {
+        let output = stringify!($($input1),*);
+        println!("{}", output);
+    };
+}
+
+fn main() {
+    print_anything!(abc, 123);
+    print_anything!();
+    print_anything!(abc, defg, 123abc, !);
+}
+```
+
+### 通过宏定义函数
+
+```rust
+macro_rules! make_a_function {
+    ($name:ident, $($input:tt),*) => {
+        fn $name() { // 第一个参数 ident 类型，可以作为函数名使用
+            let output = stringify!($($input),*); // 把除了函数名以外的转成 string
+            println!("{}", output);
+        }
+    };
+}
+
+fn main() {
+    make_a_function!(print_it, 5, 5, 6, I); // 定义一个名称为 print_it() 的函数，然后打印后面给的所有参数
+    print_it(); // 这个函数在宏中通过 $name 定义了。结果是： 5, 5, 6, I
+    make_a_function!(say_its_nice, this, is, really, nice); // 这里也一样只是换了个函数名
+    say_its_nice(); // 结果是：this, is, really, nice
+}
+```
