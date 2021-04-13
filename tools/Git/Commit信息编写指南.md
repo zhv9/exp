@@ -5,7 +5,7 @@
 
 ![清晰明了的commit信息](./img/Commit信息编写指南-清晰明了的commit信息.png)
 
-社区中有很多commit信息编写方法，本文介绍的是[Angular规范](../manage/ContributingToAngularJS.md#commit)
+社区中有很多commit信息编写方法，本文介绍的是[Angular规范](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit)
 
 # Commit信息的作用
 格式化的Commit message，有几个好处。
