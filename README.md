@@ -17,6 +17,7 @@
 1. [设计模式(C#)](./dev_basic/DesignPattern/设计模式.md)
 2. [DDD贫血模型和充血模型](dev_basic/DesignPattern/OOP/DDD贫血模型和充血模型.md)
 3. [数据结构与算法](dev_basic/DSA)
+4. [函数式编程](dev_basic/functional_programming/functional_programming.md)
 
 ## 软件开发及库的使用
 
