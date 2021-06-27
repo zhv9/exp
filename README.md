@@ -39,6 +39,7 @@
    3. [插件HelloWorld](develop/VSCodeExtension/3.插件HelloWorld.md)
    4. [主要配置和API](develop/VSCodeExtension/4.主要配置和API.md)
    5. [webView](develop/VSCodeExtension/5.webView.md)
+5. [JWT Token](develop/jwt_token.md)
 
 ## 测试
 
