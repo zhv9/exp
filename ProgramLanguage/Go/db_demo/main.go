@@ -23,11 +23,11 @@ func tableCrud() {
 	first.createTable()
 	first.Insert()
 	result, _ := getOne(1)
-	fmt.Println("First result: ", result)
+	fmt.Println("First: ", first, "First result: ", result)
 
 	second.Insert()
 	result, _ = getOne(2)
-	fmt.Println("Second result: ", result)
+	fmt.Println("Second: ", second, "Second result: ", result)
 
 	result.name = result.name + " plus"
 	result.Update()

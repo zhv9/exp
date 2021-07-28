@@ -19,12 +19,15 @@ func (a *app) Insert() (err error) {
 	statement, _ := db.Prepare(`INSERT INTO App
 		(Name, Status, [Order])
 		VALUES
-		(?,?,?)
+		(?,?,?);
+		SELECT max(Id) FROM App;
 	`)
-	_, err = statement.Exec(a.name, a.status, a.order)
+	result, err := statement.Exec(a.name, a.status, a.order)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+	newId, err := result.LastInsertId()
+	a.id = int(newId)
 	return
 }
 
