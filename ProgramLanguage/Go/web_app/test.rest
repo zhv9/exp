@@ -1,0 +1,86 @@
+### GET test
+GET http://localhost:8080/header?id=1234&thread_id=5678
+
+
+### POST test
+POST http://localhost:8080/post
+Content-Type: application/json
+
+{
+    "name": "sample",
+    "time": "123"
+}
+
+###### Form
+
+### POST urlencoded form test
+POST http://localhost:8080/process_form?first_name=Nike
+Content-Type: application/x-www-form-urlencoded
+
+first_name=foo
+&last_name=bar
+
+### POST multipart form test
+Post http://localhost:8080/process_multipart_form?first_name=Nike
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="first_name"
+
+foo
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="last_name"
+
+bar
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploaded"; filename="test.rest"
+Content-Type: image/png
+
+< ./test.rest
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###### Header
+
+### write
+GET http://localhost:8080/write
+
+### write header
+GET http://localhost:8080/writeheader
+
+### header
+GET http://localhost:8080/redirect
+# curl -i localhost:8080/redirect
+
+### json
+GET http://localhost:8080/json
+
+###### template
+
+### simple template
+GET http://localhost:8080/process
+
+######
+
+### json test
+POST http://localhost:8080/json
+
+{
+    "id": 123,
+    "name": "foo",
+    "country": "bar"
+}
+
+
+######
+
+### with auth
+GET http://localhost:8080/json
+Authorization: 123
+
+### without auth
+GET http://localhost:8080/json
+
+### time out
+GET http://localhost:8080/timeout
+?timeout=4
+Authorization: 123
