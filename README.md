@@ -9,6 +9,11 @@
   - 或参考[CodeReview](dev_management/CodeReview.md)
 - 版本发布
   - [版本发布指南](./tools/Git/release.md)
+- 程序员工作法（[10x程序员工作法学](https://time.geekbang.org/column/intro/148?code=loyiwBoYqQ8Yt8EludGgyW8uKO4cXZ2sAJ5rqaeoVkA%3D&utm_term=SPoster) 学习笔记）
+  - [以终为始](dev_management/how_to_work_1_start.md)
+  - [工作分解](dev_management/how_to_work_2_work_breakdown.md)
+  - [沟通](dev_management/how_to_work_3_communication.md)
+  - [自动化](dev_management/how_to_work_4_automation.md)
 
 # 开发相关
 
@@ -18,6 +23,7 @@
 2. [DDD贫血模型和充血模型](dev_basic/DesignPattern/OOP/DDD贫血模型和充血模型.md)
 3. [数据结构与算法](dev_basic/DSA)
 4. [函数式编程](dev_basic/functional_programming/functional_programming.md)
+5. [leetcode](dev_basic/leetcode/readme.md)
 
 ## 软件开发及库的使用
 
@@ -33,7 +39,8 @@
    2. [redux](develop/React/redux.md)
    3. [react hooks](develop/React/react_hooks.md)
    4. [react test](develop/React/react_test.md)
-   5. [redux saga](develop/React/redux-saga/redux-saga.md)
+   5. [react testing-library](develop/React/react_testing_library.md)
+   6. [redux saga](develop/React/redux-saga/redux-saga.md)
 4. [VSCode 插件开发](./develop/VSCodeExtension)
    1. [VSCode结构](develop/VSCodeExtension/1.VSCode结构.md)
    2. [插件能做什么](develop/VSCodeExtension/2.插件能做什么.md)
@@ -64,6 +71,9 @@
 1. [Java(only code no docs)](ProgramLanguage/Java)
 2. [Typescript](ProgramLanguage/TypeScript)
 3. [Rust](ProgramLanguage/Rust/readme.md)
+4. [Go](ProgramLanguage/Go)
+  - [Go db demo](ProgramLanguage/Go/db_demo)
+  - [Go web](ProgramLanguage/Go/web_app/readme.md)
 
 ## 工具使用
 
