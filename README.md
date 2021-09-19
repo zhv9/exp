@@ -69,7 +69,7 @@
 ## 编程语言
 
 1. [Java(only code no docs)](ProgramLanguage/Java)
-2. [Typescript](ProgramLanguage/TypeScript)
+2. [Typescript](ProgramLanguage/TypeScript/typescript.md)
 3. [Rust](ProgramLanguage/Rust/readme.md)
 4. [Go](ProgramLanguage/Go)
   - [Go db demo](ProgramLanguage/Go/db_demo)

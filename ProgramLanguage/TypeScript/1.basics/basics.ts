@@ -1,58 +1,57 @@
-// 基本类型
+// 变量声明和基本类型
 {
   let a: number = 1;
-  let b: string = 'hello';
-  let c: string = `${b} abc`;
+  let b: string = `${a} abc`;
+  let c: boolean = true;
   let listNumber: number[] = [1, 2, 3];
   let listString: string[] = ['a', 'b', 'c'];
-  let listArray: Array<string> = ['a', 'b', 'c'];
+  let arrayString: Array<string> = ['a', 'b', 'c']; // same as string[]
+  let obj: any = { x: 0 };
+  // function parameter and return type annotations
+  function myFunc(myNumber: number): string {
+    return myNumber.toString();
+  }
+  // Object types
+  function printCoord(pt: { x: number; y: number }) {}
+  {
+    // Optional Properties
+    function printName(obj: { first: string; last?: string }) {}
+    // Both OK
+    printName({ first: 'Bob' });
+    printName({ first: 'Alice', last: 'Alisson' });
+  }
 }
 
-// 变量声明
+// 枚举
 {
-  const a: number = 1;
-  let b: number = 2;
+  enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT",
+  }
+  
+  let theDirection: Direction;
+  theDirection = Direction.Up;
 }
-
 
 // 泛型
 {
   function hello<T>(arg: [T]): T {
     return arg[0];
   }
-  console.log(hello(["aaa"]));
+  console.log(hello(['aaa']));
 }
 
 {
-  import fs from 'fs';
-
-  function readFileAsync(filePath: string) {
-    return new Promise((resolve, reject) => {
-      fs.readFile(filePath, (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      })
-    })
+  function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
+    return obj[key];
   }
-}
-
-// 枚举
-{
-  enum a {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday
-  }
-
-  let b: 'Monday' | 'Tuesday';
-  b = 'Monday';
+  
+  let x = { a: 1, b: 2, c: 3, d: 4 };
+  
+  getProperty(x, "a");
+  getProperty(x, "m");
 }
 
 // iterator, generator
@@ -92,12 +91,11 @@
   }
 
   let gen = sortArray(array);
-  let newValue: { value: number, done: boolean };
+  let newValue: IteratorResult<number, void>; // { value: number; done: boolean };
   do {
     newValue = gen.next();
     console.log(newValue.value);
   } while (newValue.done);
-
 }
 
 // interface
@@ -130,14 +128,14 @@
   interface anySquareConfig {
     color?: string;
     width?: number;
-    [propName: string]: any;  // 只要不是 color 或 width 就是 any 类型
+    [propName: string]: any; // 只要不是 color 或 width 就是 any 类型
   }
 
   const anySquare: anySquareConfig = {
     color: 'black',
     width: '1', // error width 需要是number类型
-    anyProp: [1, 2],  // OK
-  }
+    anyProp: [1, 2], // OK
+  };
 
   // 函数类型 interface
   interface SearchFunc {
@@ -147,7 +145,7 @@
   mySearch = function (source, subString) {
     const result = source.search(subString);
     return !!~result;
-  }
+  };
 }
 
 // class
@@ -197,9 +195,12 @@
 
   class theRect extends theSquare {
     constructor(name: string) {
-      super(name)
+      super(name);
     }
-    areaWithDifferentSideLength(longSideLength: number, shortSideLength: number) {
+    areaWithDifferentSideLength(
+      longSideLength: number,
+      shortSideLength: number
+    ) {
       this.area = longSideLength * shortSideLength;
       return this.area;
     }
@@ -212,7 +213,6 @@
 
   myRect.areaWithDifferentSideLength(12, 10);
   console.log('area 12*10: ', myRect.area);
-
 }
 
 // abstract
@@ -249,6 +249,4 @@ namespace n {
   const z = Validation.ZipCodeValidator('123');
   console.log('hello validate string: ', h);
   console.log('123 validate string: ', z);
-
 }
-
