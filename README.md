@@ -72,8 +72,8 @@
 2. [Typescript](ProgramLanguage/TypeScript/typescript.md)
 3. [Rust](ProgramLanguage/Rust/readme.md)
 4. [Go](ProgramLanguage/Go)
-  - [Go db demo](ProgramLanguage/Go/db_demo)
-  - [Go web](ProgramLanguage/Go/web_app/readme.md)
+    - [Go db demo](ProgramLanguage/Go/db_demo)
+    - [Go web](ProgramLanguage/Go/web_app/readme.md)
 
 ## 工具使用
 
