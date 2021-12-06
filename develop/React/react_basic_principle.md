@@ -7,6 +7,17 @@ paginate: true
 
 ---
 
+- [React basic and principle](#react-basic-and-principle)
+  - [一段最基本的 React 代码](#一段最基本的-react-代码)
+  - [React 的特点](#react-的特点)
+    - [声明式](#声明式)
+    - [组件化](#组件化)
+    - [MVC](#mvc)
+  - [React 哲学](#react-哲学)
+  - [React 开发原则](#react-开发原则)
+
+---
+
 ## 一段最基本的 React 代码
 
 ```ts
@@ -91,12 +102,6 @@ https://zh-hans.reactjs.org/docs/thinking-in-react.html
 3. 确定 UI state 的最小（且完整）表示
 4. 确定 state 放置的位置
 5. 添加反向数据流（来更新顶层放置的 state）
-
----
-
-### 拆分组件
-
-https://zh-hans.reactjs.org/docs/thinking-in-react.html#step-1-break-the-ui-into-a-component-hierarchy
 
 ---
 
