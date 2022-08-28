@@ -1,0 +1,14 @@
+FROM golang:alpine as builder
+
+WORKDIR /go
+COPY ./main.go .
+
+RUN go build -o httpd ./main.go
+
+FROM alpine
+
+WORKDIR /root/
+COPY --from=builder /go/httpd .
+RUN chmod +x /root/httpd
+
+ENTRYPOINT [ "/root/httpd" ]

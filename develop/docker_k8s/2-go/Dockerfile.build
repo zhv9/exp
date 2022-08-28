@@ -1,0 +1,6 @@
+FROM golang:1.19-alpine
+
+WORKDIR /go
+COPY ./main.go .
+
+RUN go build -o httpd ./main.go

@@ -1,0 +1,43 @@
+node() {
+    stage('Clone') {
+        def gitPath = "xxx/xxx"
+        echo "1. Clone Stage"
+        git url: "https://github.com/${gitPath}.git"
+        script {
+            build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+        }
+    }
+    stage('Test') {
+        echo "2. Test Stage"
+    }
+    stage('Build') {
+        echo "3. Build Stage"
+        sh "docker build -t ${gitPath}:${build_tag} ."
+    }
+    stage('Push') {
+        echo "4. Push Stage"
+        whthCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'dockHubUser', passwordVariable: 'dockerHubPassword')])
+        sh "docker login -u ${dockHubUser} -p ${dockerHubPassword}"
+        sh "docker push ${gitPath}:${build_tag}"
+    }
+    stage('YAML') {
+        echo "5. Change YAML FILE Stage"
+        sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
+    }
+    stage('Deploy') {
+        echo "5. Deploy Stage"
+        def userInput = input(
+            id: 'userInput',
+            message: 'Choose a deploy env',
+            parameters: [
+                [
+                    $class: 'ChoiceParameterDefinition',
+                    choices: 'Dev\nQA\nProd',
+                    name: 'Env'
+                ]
+            ]
+        )
+        echo "This is a deploy step to ${userInput} env"
+        sh "kubectl apply -f k8s.yaml --record"
+    }
+}

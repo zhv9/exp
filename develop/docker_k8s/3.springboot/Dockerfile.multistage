@@ -1,0 +1,11 @@
+FROM maven:3.8.6-jdk-11 as builder
+
+WORKDIR /java
+COPY ./ .
+RUN mvn --settings ./settings.xml clean install -DskipTests
+RUN cp target/*.jar target/app.jar
+
+FROM openjdk:11-oracle
+VOLUME /tmp
+COPY --from=builder java/target/app.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]

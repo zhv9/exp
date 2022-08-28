@@ -1,0 +1,8 @@
+FROM alpine
+
+COPY ./httpd /root/httpd
+RUN chmod +x /root/httpd
+
+WORKDIR /root
+
+ENTRYPOINT [ "/root/httpd" ]
