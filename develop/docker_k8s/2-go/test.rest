@@ -1,2 +1,5 @@
 ### hello
-GET http://localhost:8080/
+GET http://localhost:8080/health
+
+### user
+GET http://localhost:8080/user?uid=123
