@@ -16,6 +16,6 @@
       "inversify-express-utils": "^6.3.2",
       "reflect-metadata": "^0.1.13",
       "sqlite3": "^4.0.3",
-      "typeorm": "0.2.18"
+      "typeorm": "0.3.0"
    }
 }
